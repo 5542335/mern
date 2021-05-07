@@ -5,22 +5,8 @@ import CustomTextField from "./component/registerForm/body/body";
 import TitleRegisterForm from "./component/registerForm/title/Title";
 import SubmitButton from "./component/registerForm/submitSection/SubmitButton";
 import GoogleLogin from "react-google-login";
-//import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-//import TextField from "@material-ui/core/TextField";
-
-//import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-//import Link from "@material-ui/core/Link";
-//import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-//import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-//import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { DialogActions, DialogContent } from "@material-ui/core";
-import Dialog from "@material-ui/core/Dialog";
 import Agreements from "./component/registerForm/body/agreement";
 
 const responseGoogle = (response) => {
@@ -37,21 +23,25 @@ const SignupForm = () => {
     },
     validationSchema: Yup.object({
       firstName: Yup.string()
-        .matches(/[a-zA-Z]/, "Password can only contain Latin letters.")
-        .max(32, "Must be 15 characters or less")
-        .required("Required"),
+        .matches(/[a-zA-Z]/, "Имя должно содержать только латинские символы")
+        .max(32, "Максимум 32 символа")
+        .required("Обязательное поле"),
       lastName: Yup.string()
-        .matches(/[a-zA-Z]/, "Password can only contain Latin letters.")
-        .max(32, "Must be 20 characters or less")
-        .required("Required"),
+        .matches(
+          /[a-zA-Z]/,
+          "Фамилия должна содержать только латинские символы"
+        )
+        .max(32, "Максимум 32 символа")
+        .required("Обязательное поле"),
       password: Yup.string()
-        // .matches(/^(?=.*[@$!%*#?&]{4,}$)/, "Минимум 4 спецсимвола")
-        .matches(/(?=.*[A-Z])/, "Одна буква в верхнем регистре")
-        .matches(/^[a-zA-Z0-9 ]+$/, "Password can only contain Latin letters.")
-        .min(8, "Должно быть более 8 символов")
-        .max(32, "Must be 15 characters or less")
-        .required("Required"),
-      email: Yup.string().email("Invalid email address").required("Required"),
+        .matches(
+          /^.*(?=.{8,32})(?=.*[!@#$%^&*()\-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/,
+          "Пароль должен быть от 8 до 32 символов, одна буква в верхнем регистре, 4 спецсимвола"
+        )
+        .required("Обязательное поле"),
+      email: Yup.string()
+        .email("Неверный email адрес")
+        .required("Обязательное поле"),
     }),
     onSubmit: (values) => {},
   });
