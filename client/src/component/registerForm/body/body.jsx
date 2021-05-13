@@ -1,20 +1,5 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
-//import { ErrorMessage, useFormik } from "formik";
-//import FormControlLabel from "@material-ui/core/FormControlLabel";
-
-// const errorValidation = () => {
-//   return (
-//     <TextField
-//       error
-//       id="outlined-error-helper-text"
-//       label="Error"
-//       defaultValue="Hello World"
-//       helperText="Incorrect entry."
-//       variant="outlined"
-//     />
-//   );
-// };
 
 const CustomTextField = ({
   id,
@@ -24,7 +9,6 @@ const CustomTextField = ({
   formik,
   type,
   helperText,
-  //error,
 }) => (
   <>
     <TextField
@@ -41,7 +25,7 @@ const CustomTextField = ({
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
       value={formik.values[id]}
-      //error={formik.errors[id]}
+      error={formik.errors[id]}
     />
     {formik.touched[id] && formik.errors[id] ? (
       <div>{formik.errors[id]}</div>

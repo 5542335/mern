@@ -18,7 +18,6 @@ const Agreements = () => {
   return (
     <Box>
       <Checkbox
-        defaultChecked
         color="primary"
         inputProps={{ "aria-label": "secondary checkbox" }}
       />
