@@ -1,16 +1,19 @@
-import React from "react";
-import Box from "@material-ui/core/Box";
-import Checkbox from "@material-ui/core/Checkbox";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import { DialogActions, DialogContent } from "@material-ui/core";
+import React, { useState, useCallback } from "react";
+import {
+  Box,
+  Checkbox,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+} from "@material-ui/core";
 
 const Agreements = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = useCallback(() => {
     setOpen(true);
-  };
+  }, [setOpen]);
 
   const handleClose = () => {
     setOpen(false);

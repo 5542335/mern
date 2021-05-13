@@ -5,6 +5,10 @@ const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
 const router = Router();
 
+router.get("/handle", (request, response) => {
+  response.status(201).json({ message: "Пользователь создан" });
+});
+
 router.post(
   "/register",
   [
@@ -42,6 +46,7 @@ router.post(
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
+
       const user = new User({
         firstName,
         lastName,

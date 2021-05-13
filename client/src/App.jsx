@@ -1,5 +1,5 @@
 import React from "react";
-import { ErrorMessage, useFormik } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 import CustomTextField from "./component/registerForm/body/body";
 import TitleRegisterForm from "./component/registerForm/title/Title";
@@ -9,19 +9,17 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Agreements from "./component/registerForm/body/agreement";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core";
+import "./index.css";
 
 const responseGoogle = (response) => {
   console.log(response);
 };
-const useStyles = makeStyles((theme) => ({
-  grid: {
-    width: "100%",
-    margin: "0px",
-    justifyContent: "center",
-  },
-}));
+
+const nameRegex = new RegExp(/[a-zA-Z]/);
+
+const passwordRegex = new RegExp(
+  /^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/
+);
 
 const SignupForm = () => {
   const formik = useFormik({
@@ -33,19 +31,16 @@ const SignupForm = () => {
     },
     validationSchema: Yup.object({
       firstName: Yup.string()
-        .matches(/[a-zA-Z]/, "Имя должно содержать только латинские символы")
+        .matches(nameRegex, "Имя должно содержать только латинские символы")
         .max(32, "Максимум 32 символа")
         .required("Обязательное поле"),
       lastName: Yup.string()
-        .matches(
-          /[a-zA-Z]/,
-          "Фамилия должна содержать только латинские символы"
-        )
+        .matches(nameRegex, "Фамилия должна содержать только латинские символы")
         .max(32, "Максимум 32 символа")
         .required("Обязательное поле"),
       password: Yup.string()
         .matches(
-          /^.*(?=.{8,32})(?=.*[!@#$%^&*()\-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/,
+          passwordRegex,
           "Пароль должен быть от 8 до 32 символов, одна буква в верхнем регистре, 4 спецсимвола"
         )
         .required("Обязательное поле"),
@@ -53,19 +48,23 @@ const SignupForm = () => {
         .email("Неверный email адрес")
         .required("Обязательное поле"),
     }),
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        body: values,
+      });
+    },
   });
 
-  const classes = useStyles();
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className="form">
+      <div>
         <form onSubmit={formik.handleSubmit}>
-          <Grid container className={classes.grid}>
+          <Grid container className="grid">
             <TitleRegisterForm titleText="Регистрация" />
           </Grid>
-          <Grid container spacing={1} className={classes.grid}>
+          <Grid container spacing={1} className="grid">
             <Grid item xs={12} sm={7} md={5}>
               <CustomTextField
                 id="firstName"
@@ -112,13 +111,13 @@ const SignupForm = () => {
               />
             </Grid>
           </Grid>
-          <Grid container className={classes.grid}>
+          <Grid container className="grid">
             <Grid item>
               <Agreements />
             </Grid>
           </Grid>
 
-          <Grid container spacing={1} className={classes.grid}>
+          <Grid container spacing={1} className="grid">
             <Grid item xs={6}>
               <SubmitButton
                 color="primary"
