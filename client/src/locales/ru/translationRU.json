@@ -1,3 +1,6 @@
 {
-  "registration": "Регистрация"
+  "registrationTitle": "Регистрация",
+  "registration": "Зарегистрироваться",
+  "accordance": "Я принимаю условия",
+  "close": "Закрыть"
 }

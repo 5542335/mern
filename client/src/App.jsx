@@ -4,12 +4,11 @@ import * as Yup from "yup";
 import CustomTextField from "./component/registerForm/body/body";
 import TitleRegisterForm from "./component/registerForm/title/Title";
 import SubmitButton from "./component/registerForm/submitSection/SubmitButton";
-import GoogleLogin from "react-google-login";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Container from "@material-ui/core/Container";
 import Agreements from "./component/registerForm/body/agreement";
-import Grid from "@material-ui/core/Grid";
+import GoogleLogin from "react-google-login";
+import { CssBaseline, Container, Grid } from "@material-ui/core";
 import "./index.css";
+import { useTranslation } from "react-i18next";
 
 const responseGoogle = (response) => {
   console.log(response);
@@ -20,6 +19,8 @@ const nameRegex = new RegExp(/[a-zA-Z]/);
 const passwordRegex = new RegExp(
   /^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/
 );
+
+const { t } = useTranslation();
 
 const SignupForm = () => {
   const formik = useFormik({
@@ -62,7 +63,7 @@ const SignupForm = () => {
       <div>
         <form onSubmit={formik.handleSubmit}>
           <Grid container className="grid">
-            <TitleRegisterForm titleText="Регистрация" />
+            <TitleRegisterForm />
           </Grid>
           <Grid container spacing={1} className="grid">
             <Grid item xs={12} sm={7} md={5}>
@@ -119,10 +120,7 @@ const SignupForm = () => {
 
           <Grid container spacing={1} className="grid">
             <Grid item xs={6}>
-              <SubmitButton
-                color="primary"
-                submitButtonText="Зарегистрироваться"
-              />
+              <SubmitButton color="primary" />
 
               <GoogleLogin
                 clientId="631572139627-994glqmtsdnvjkaf5g7qo450mvhptbb5.apps.googleusercontent.com"

@@ -1,3 +1,6 @@
 {
-  "registration": "Registration"
+  "registrationTitle": "Registration",
+  "registration": "Sign up",
+  "accordance": "I agree",
+  "close": "Close"
 }

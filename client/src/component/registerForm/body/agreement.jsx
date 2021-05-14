@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Checkbox,
@@ -18,6 +19,8 @@ const Agreements = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const { t } = useTranslation();
   return (
     <Box>
       <Checkbox
@@ -25,12 +28,12 @@ const Agreements = () => {
         inputProps={{ "aria-label": "secondary checkbox" }}
       />
 
-      <Button onClick={handleClickOpen}>Я согласен с условиями</Button>
+      <Button onClick={handleClickOpen}>{t("accordance")}</Button>
 
       <Dialog
         open={open}
         onClose={handleClose}
-        aria-labelledby="Пользовательское соглашение"
+        // aria-labelledby="Пользовательское соглашение"
       >
         <DialogContent>
           <h4>
@@ -66,7 +69,7 @@ const Agreements = () => {
           </h4>
         </DialogContent>
         <DialogActions onClick={handleClose} color="primary">
-          Закрыть
+          {t("close")}
         </DialogActions>
       </Dialog>
     </Box>
