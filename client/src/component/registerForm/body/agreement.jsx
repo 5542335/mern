@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Checkbox,
@@ -7,7 +7,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-} from "@material-ui/core";
+} from '@material-ui/core';
 
 const Agreements = () => {
   const [open, setOpen] = useState(false);
@@ -16,19 +16,20 @@ const Agreements = () => {
     setOpen(true);
   }, [setOpen]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-  };
+  }, [setOpen]);
 
   const { t } = useTranslation();
+
   return (
     <Box>
       <Checkbox
         color="primary"
-        inputProps={{ "aria-label": "secondary checkbox" }}
+        inputProps={{ 'aria-label': 'secondary checkbox' }}
       />
 
-      <Button onClick={handleClickOpen}>{t("accordance")}</Button>
+      <Button onClick={handleClickOpen}>{t('accordance')}</Button>
 
       <Dialog
         open={open}
@@ -69,7 +70,7 @@ const Agreements = () => {
           </h4>
         </DialogContent>
         <DialogActions onClick={handleClose} color="primary">
-          {t("close")}
+          {t('close')}
         </DialogActions>
       </Dialog>
     </Box>

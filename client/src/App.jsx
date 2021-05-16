@@ -1,14 +1,15 @@
-import React from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import CustomTextField from "./component/registerForm/body/body";
-import TitleRegisterForm from "./component/registerForm/title/Title";
-import SubmitButton from "./component/registerForm/submitSection/SubmitButton";
-import Agreements from "./component/registerForm/body/agreement";
-import GoogleLogin from "react-google-login";
-import { CssBaseline, Container, Grid } from "@material-ui/core";
-import "./index.css";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import GoogleLogin from 'react-google-login';
+import { CssBaseline, Container, Grid } from '@material-ui/core';
+// import { useTranslation } from "react-i18next";
+
+import CustomTextField from './component/registerForm/body/body';
+import TitleRegisterForm from './component/registerForm/title/Title';
+import SubmitButton from './component/registerForm/submitSection/SubmitButton';
+import Agreements from './component/registerForm/body/agreement';
+import './index.css';
 
 const responseGoogle = (response) => {
   console.log(response);
@@ -20,41 +21,41 @@ const passwordRegex = new RegExp(
   /^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/
 );
 
-const { t } = useTranslation();
+// const { t } = useTranslation();
 
 const SignupForm = () => {
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      password: "",
-      email: "",
+      email: '',
+      firstName: '',
+      lastName: '',
+      password: '',
+    },
+    onSubmit: (values) => {
+      fetch('http://localhost:5000/api/auth/register', {
+        body: values,
+        method: 'POST',
+      });
     },
     validationSchema: Yup.object({
+      email: Yup.string()
+        .email('Неверный email адрес')
+        .required('Обязательное поле'),
       firstName: Yup.string()
-        .matches(nameRegex, "Имя должно содержать только латинские символы")
-        .max(32, "Максимум 32 символа")
-        .required("Обязательное поле"),
+        .matches(nameRegex, 'Имя должно содержать только латинские символы')
+        .max(32, 'Максимум 32 символа')
+        .required('Обязательное поле'),
       lastName: Yup.string()
-        .matches(nameRegex, "Фамилия должна содержать только латинские символы")
-        .max(32, "Максимум 32 символа")
-        .required("Обязательное поле"),
+        .matches(nameRegex, 'Фамилия должна содержать только латинские символы')
+        .max(32, 'Максимум 32 символа')
+        .required('Обязательное поле'),
       password: Yup.string()
         .matches(
           passwordRegex,
-          "Пароль должен быть от 8 до 32 символов, одна буква в верхнем регистре, 4 спецсимвола"
+          'Пароль должен быть от 8 до 32 символов, одна буква в верхнем регистре, 4 спецсимвола'
         )
-        .required("Обязательное поле"),
-      email: Yup.string()
-        .email("Неверный email адрес")
-        .required("Обязательное поле"),
+        .required('Обязательное поле'),
     }),
-    onSubmit: (values) => {
-      fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        body: values,
-      });
-    },
   });
 
   return (

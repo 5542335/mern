@@ -1,14 +1,28 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 const SubmitButton = ({ type = "submit", variant = "contained", color }) => {
   const { t } = useTranslation();
+
   return (
     <Button type={type} variant={variant} color={color}>
       {t("registration")}
     </Button>
   );
+};
+
+SubmitButton.propTypes = {
+  color: PropTypes.string,
+  type: PropTypes.string,
+  variant: PropTypes.string,
+};
+
+SubmitButton.defaultProps = {
+  color: "somestring",
+  type: "somestring",
+  variant: "somestring",
 };
 
 export default SubmitButton;
