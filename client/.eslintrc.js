@@ -13,8 +13,6 @@ module.exports = {
   },
   parser: 'babel-eslint',
   rules: {
-    "indent": ["error", 100, { "ignoredNodes": ["TemplateLiteral *"] }],
-    "function-paren-newline": "off",
     'react/jsx-filename-extension': [2, {
       'extensions': ['.js', '.jsx'],
     }],

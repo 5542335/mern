@@ -1,6 +1,6 @@
-import React from "react";
-import TextField from "@material-ui/core/TextField";
-import PropTypes from "prop-types";
+import React from 'react';
+import TextField from '@material-ui/core/TextField';
+import PropTypes from 'prop-types';
 
 const CustomTextField = ({ id, label, name, autoComplete, formik, type, helperText }) => (
   <>
@@ -35,13 +35,13 @@ CustomTextField.propTypes = {
 };
 
 CustomTextField.defaultProps = {
-  autoComplete: "somestring",
-  formik: "somestring",
-  helperText: "somestring",
-  id: "somestring",
-  label: "somestring",
-  name: "somestring",
-  type: "somestring",
+  autoComplete: 'somestring',
+  formik: 'somestring',
+  helperText: 'somestring',
+  id: 'somestring',
+  label: 'somestring',
+  name: 'somestring',
+  type: 'somestring',
 };
 
 export default CustomTextField;

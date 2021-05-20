@@ -1,8 +1,8 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 
-import translationRU from "./locales/ru/translationRU.json";
-import translationEN from "./locales/en/translationEN.json";
+import translationRU from './locales/ru/translationRU.json';
+import translationEN from './locales/en/translationEN.json';
 
 // the translations
 // (tip move them in a JSON file and import them)
@@ -24,7 +24,7 @@ i18n
     },
 
     keySeparator: false,
-    lng: "ru",
+    lng: 'en',
 
     resources,
   });

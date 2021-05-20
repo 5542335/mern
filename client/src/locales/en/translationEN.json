@@ -1,6 +1,15 @@
 {
   "registrationTitle": "Registration",
   "registration": "Sign up",
-  "accordance": "I agree",
-  "close": "Close"
+  "accordance": "I accept the terms and conditions",
+  "close": "Close",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "password": "Password",
+  "email": "Email",
+  "required": "Required",
+  "invalidEmail": "Invalid email address",
+  "nameMatches": "Only lattin letters",
+  "passwordMatches": "Minimum eight characters, at least one uppercase letter,and four special characters",
+  "nameMaxLength": "Too Long!"
 }

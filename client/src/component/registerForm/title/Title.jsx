@@ -1,26 +1,15 @@
-import React from "react";
-import Typography from "@material-ui/core/Typography";
-import { useTranslation } from "react-i18next";
-import PropTypes from "prop-types";
+import React from 'react';
+import Typography from '@material-ui/core/Typography';
+import { useTranslation } from 'react-i18next';
 
-const TitleRegisterForm = ({ component = "h1", variant = "h5" }) => {
+const TitleRegisterForm = () => {
   const { t } = useTranslation();
 
   return (
-    <Typography component={component} variant={variant}>
-      {t("registrationTitle")}
+    <Typography component="h1" variant="h5">
+      {t('registrationTitle')}
     </Typography>
   );
-};
-
-TitleRegisterForm.propTypes = {
-  component: PropTypes.string,
-  variant: PropTypes.string,
-};
-
-TitleRegisterForm.defaultProps = {
-  component: "somestring",
-  variant: "somestring",
 };
 
 export default TitleRegisterForm;

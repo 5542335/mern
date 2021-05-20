@@ -1,9 +1,9 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import GoogleLogin from 'react-google-login';
 import { CssBaseline, Container, Grid } from '@material-ui/core';
-// import { useTranslation } from "react-i18next";
 
 import CustomTextField from './component/registerForm/body/body';
 import TitleRegisterForm from './component/registerForm/title/Title';
@@ -17,15 +17,14 @@ const responseGoogle = (response) => {
 
 const nameRegex = new RegExp(/[a-zA-Z]/);
 
-const passwordRegex = new RegExp(
-  /^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/
-);
-
-// const { t } = useTranslation();
+const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/);
 
 const SignupForm = () => {
+  const { t } = useTranslation();
+
   const formik = useFormik({
     initialValues: {
+      acceptedTerms: '',
       email: '',
       firstName: '',
       lastName: '',
@@ -38,23 +37,11 @@ const SignupForm = () => {
       });
     },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .email('Неверный email адрес')
-        .required('Обязательное поле'),
-      firstName: Yup.string()
-        .matches(nameRegex, 'Имя должно содержать только латинские символы')
-        .max(32, 'Максимум 32 символа')
-        .required('Обязательное поле'),
-      lastName: Yup.string()
-        .matches(nameRegex, 'Фамилия должна содержать только латинские символы')
-        .max(32, 'Максимум 32 символа')
-        .required('Обязательное поле'),
-      password: Yup.string()
-        .matches(
-          passwordRegex,
-          'Пароль должен быть от 8 до 32 символов, одна буква в верхнем регистре, 4 спецсимвола'
-        )
-        .required('Обязательное поле'),
+      acceptedTerms: Yup.boolean().required('Required').oneOf([true], 'You must accept the terms and conditions.'),
+      email: Yup.string().email('Неверный email адрес').required(t('required')),
+      firstName: Yup.string().matches(nameRegex, t('nameMatches')).max(32, t('nameMaxLength')).required(t('required')),
+      lastName: Yup.string().matches(nameRegex, t('nameMatches')).max(32, t('nameMaxLength')).required(t('required')),
+      password: Yup.string().matches(passwordRegex, t('passwordMatches')).required(t('required')),
     }),
   });
 
@@ -70,7 +57,7 @@ const SignupForm = () => {
             <Grid item xs={12} sm={7} md={5}>
               <CustomTextField
                 id="firstName"
-                label="Имя"
+                label={t('firstName')}
                 name="firstName"
                 type="text"
                 autoComplete="Имя"
@@ -81,7 +68,7 @@ const SignupForm = () => {
             <Grid item xs={12} sm={7} md={5}>
               <CustomTextField
                 id="lastName"
-                label="Фамилия"
+                label={t('lastName')}
                 name="lastName"
                 type="text"
                 autoComplete="Фамилия"
@@ -93,7 +80,7 @@ const SignupForm = () => {
             <Grid item xs={12} sm={7} md={5}>
               <CustomTextField
                 id="password"
-                label="Пароль"
+                label={t('password')}
                 name="password"
                 type="password"
                 autoComplete="Пароль"
@@ -104,7 +91,7 @@ const SignupForm = () => {
             <Grid item xs={12} sm={7} md={5}>
               <CustomTextField
                 id="email"
-                label="Почта"
+                label={t('email')}
                 name="email"
                 type="email"
                 autoComplete="Почта"
