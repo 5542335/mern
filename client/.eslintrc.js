@@ -1,0 +1,130 @@
+module.exports = {
+  extends: [
+    'airbnb',
+    'prettier',
+    'plugin:prettier/recommended',
+    'plugin:jest/recommended',
+    'plugin:jest-formatting/strict',
+  ],
+  env: {
+    browser: true,
+    node: true,
+    jasmine: true,
+  },
+  parser: 'babel-eslint',
+  rules: {
+    'react/jsx-filename-extension': [2, {
+      'extensions': ['.js', '.jsx'],
+    }],
+    'jest/prefer-to-have-length': [2],
+    'jest/no-standalone-expect': [2],
+    'jest/no-truthy-falsy': [2],
+    'jest/no-try-expect': [2],
+    'jest/prefer-called-with': [2],
+    'jest/no-duplicate-hooks': [2],
+    'jest/prefer-to-contain': [2],
+    'jest/prefer-strict-equal': [2],
+    'jest/prefer-to-be-null': [2],
+    'jest/prefer-to-be-undefined': [2],
+    'jest/expect-expect': [2, {'assertFunctionNames': ['expect', 'executeTestCase']}],
+    'react/jsx-no-bind': [2, {
+      ignoreDOMComponents: false,
+      ignoreRefs: false,
+      allowArrowFunctions: false,
+      allowFunctions: false,
+      allowBind: false,
+    }],
+    'react/jsx-props-no-spreading': [2],
+    'react-hooks/rules-of-hooks': [2],
+    'react-hooks/exhaustive-deps': [1],
+    'react/state-in-constructor': [0],
+    'max-len': [2,
+      {
+        'code': 120,
+        'tabWidth': 2,
+        'comments': 120,
+        'ignoreComments': false,
+        'ignoreTrailingComments': true,
+        'ignoreUrls': true,
+        'ignoreStrings': true,
+        'ignoreTemplateLiterals': true,
+        'ignoreRegExpLiterals': true,
+      },
+    ],
+    'import/no-extraneous-dependencies': [2, {'devDependencies': true}],
+    'sort-keys-fix/sort-keys-fix': 2,
+    'import/order': [2, {
+      'groups': [
+        'builtin',
+        'external',
+        'internal',
+        ['parent', 'sibling'],
+        'index',
+      ],
+      'newlines-between': 'always',
+    }],
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off',
+    'import/prefer-default-export': 'off',
+    'import/extensions': ['error', 'ignorePackages', {
+      'ts': 'never',
+      'tsx': 'never',
+      'js': 'never',
+      'jsx': 'never',
+      'mjs': 'never',
+    }],
+    'prettier/prettier': [2, {
+      'trailingComma': 'all',
+      'singleQuote': true,
+      'printWidth': 120,
+    }],
+    'jsx-a11y/anchor-is-valid': [0, {
+      components: ['a'],
+      specialLink: ['href'],
+    }],
+    'jsx-a11y/click-events-have-key-events': [0],
+    'jsx-a11y/no-static-element-interactions': [0],
+    'no-multiple-empty-lines': [2, {'max': 1}],
+    'padding-line-between-statements': [
+      2,
+      {'blankLine': 'always', 'prev': '*', 'next': ['if', 'return']},
+      {'blankLine': 'always', 'prev': 'block-like', 'next': '*'},
+      {'blankLine': 'always', 'prev': ['const', 'let'], 'next': '*'},
+      {'blankLine': 'any', 'prev': ['const', 'let'], 'next': ['const', 'let']}
+    ],
+    'no-restricted-syntax': [0, 'ForInStatement'],
+    'arrow-body-style': [2, 'as-needed']
+  },
+  plugins: [
+    'prettier',
+    'react',
+    'react-hooks',
+    'jest',
+    'jest-formatting',
+    'jsx-a11y',
+    'sort-keys-fix',
+    'import',
+  ],
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: [
+          '.js',
+          '.jsx',
+        ],
+        moduleDirectory: [
+          'node_modules',
+          'src',
+        ],
+      },
+    },
+  },
+  overrides: [
+    {
+      files: ['*.spec.js', '*.spec.jsx', '*.test.js', '*.test.jsx'],
+      rules: {
+        'react/jsx-props-no-spreading': 0,
+      },
+    },
+  ],
+}

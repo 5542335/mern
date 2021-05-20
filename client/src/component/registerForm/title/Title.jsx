@@ -1,10 +1,13 @@
-import React from "react";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import Typography from '@material-ui/core/Typography';
+import { useTranslation } from 'react-i18next';
 
-const TitleRegisterForm = ({ component = "h1", variant = "h5", titleText }) => {
+const TitleRegisterForm = () => {
+  const { t } = useTranslation();
+
   return (
-    <Typography component={component} variant={variant}>
-      {titleText}
+    <Typography component="h1" variant="h5">
+      {t('registrationTitle')}
     </Typography>
   );
 };
