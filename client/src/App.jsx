@@ -24,18 +24,24 @@ const SignupForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      acceptedTerms: '',
+      acceptedTerms: false,
       email: '',
       firstName: '',
       lastName: '',
       password: '',
     },
     onSubmit: (values) => {
-      fetch('http://localhost:5000/api/auth/register', {
-        body: values,
+      fetch('/api/user', {
+        body: JSON.stringify(values),
+        headers: {
+          'Content-type': 'application/json',
+        },
         method: 'POST',
       });
     },
+    // onSubmit: (values) => {
+    //   alert(JSON.stringify(values, null, 2));
+    // },
     validationSchema: Yup.object({
       acceptedTerms: Yup.boolean().required('Required').oneOf([true], 'You must accept the terms and conditions.'),
       email: Yup.string().email('Неверный email адрес').required(t('required')),
@@ -44,6 +50,8 @@ const SignupForm = () => {
       password: Yup.string().matches(passwordRegex, t('passwordMatches')).required(t('required')),
     }),
   });
+
+  console.log(formik);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -102,13 +110,13 @@ const SignupForm = () => {
           </Grid>
           <Grid container className="grid">
             <Grid item>
-              <Agreements />
+              <Agreements onChange={formik.handleChange} value={formik.values.acceptedTerms} />
             </Grid>
           </Grid>
 
           <Grid container spacing={1} className="grid">
             <Grid item xs={6}>
-              <SubmitButton color="primary" />
+              <SubmitButton disabled={!formik.isValid || !formik.dirty} color="primary" />
 
               <GoogleLogin
                 clientId="631572139627-994glqmtsdnvjkaf5g7qo450mvhptbb5.apps.googleusercontent.com"

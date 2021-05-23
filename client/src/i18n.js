@@ -24,7 +24,7 @@ i18n
     },
 
     keySeparator: false,
-    lng: 'en',
+    lng: 'ru',
 
     resources,
   });
