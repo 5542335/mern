@@ -19,6 +19,7 @@ export class User {
 
   @Prop()
   acceptedTerms: boolean;
+  id: any;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

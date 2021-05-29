@@ -7,6 +7,7 @@
   "lastName": "Last name",
   "password": "Password",
   "email": "Email",
+
   "required": "Required",
   "invalidEmail": "Invalid email address",
   "nameMatches": "Only lattin letters",
