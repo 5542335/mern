@@ -6,13 +6,8 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get()
-  findAll() {
-    return this.userService.getAllUsers();
-  }
-
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
-  }
+  // @Get()
+  // findUser() {
+  //   return this.userService.getUser();
+  // }
 }

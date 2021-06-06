@@ -19,15 +19,15 @@ export class UserService {
     return createdUser.save();
   }
 
-  async getUserByEmail(email: string) {
-    const user = await this.userModel.findOne({
-      where: { email },
-      include: { all: true },
-    });
-    return user;
-  }
-
-  // async findByEmail(email: string) {
-  //   return this.userModel.findOne({ email: email }).exec();
+  // async getUserByEmail(email: string) {
+  //   const user = await this.userModel.findOne({
+  //     where: { email },
+  //     include: { all: true },
+  //   });
+  //   return user;
   // }
+
+  async getUserByEmail(email: string) {
+    return this.userModel.findOne({ email: email }).exec();
+  }
 }

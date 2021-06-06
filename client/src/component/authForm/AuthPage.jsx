@@ -9,6 +9,7 @@ import { NavLink } from 'react-router-dom';
 import CustomTextField from './body/body';
 import TitleRegisterForm from './title/Title';
 import SubmitButton from './submitSection/SubmitButton';
+import SwitchLanguage from '../homePage/header/ru-en';
 import '../../index.css';
 
 const responseGoogle = (response) => {
@@ -21,6 +22,7 @@ export const AuthForm = () => {
   const formik = useFormik({
     initialValues: { email: '', password: '' },
     onSubmit: (values) => {
+      // TODO set token to cookie, display alert
       fetch('/api/auth/login', {
         body: JSON.stringify(values),
         headers: {
@@ -31,12 +33,12 @@ export const AuthForm = () => {
     },
 
     validationSchema: Yup.object({
-      email: Yup.string().email('Неверный email адрес').required(t('required')),
+      email: Yup.string().email(t('invalidEmail')).required(t('required')),
       password: Yup.string().matches(passwordRegex, t('passwordMatches')).required(t('required')),
     }),
   });
 
-  console.log(formik);
+  // console.log(formik);
 
   return (
     <>
@@ -44,6 +46,9 @@ export const AuthForm = () => {
         <CssBaseline />
         <div>
           <form onSubmit={formik.handleSubmit}>
+            <Grid container className="grid">
+              <SwitchLanguage />
+            </Grid>
             <Grid container className="grid">
               <TitleRegisterForm />
             </Grid>
@@ -57,6 +62,7 @@ export const AuthForm = () => {
                   autoComplete="Почта"
                   helperText=""
                   formik={formik}
+                  autoFocus="false"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -72,13 +78,12 @@ export const AuthForm = () => {
               </Grid>
             </Grid>
             <Grid container className="grid">
-              <NavLink to="/register">Нет аккаунта? Зарегистрируйтесь!</NavLink>
+              <NavLink to="/register">{t('noAccount')}</NavLink>
             </Grid>
             <Grid container spacing={1} className="grid">
               <Grid item xs={6} className="gridItem">
                 <SubmitButton disabled={!formik.isValid || !formik.dirty} color="primary" />
                 <GoogleLogin
-                  className="googleLogin"
                   clientId="631572139627-994glqmtsdnvjkaf5g7qo450mvhptbb5.apps.googleusercontent.com"
                   buttonText="Sigh in"
                   onSuccess={responseGoogle}

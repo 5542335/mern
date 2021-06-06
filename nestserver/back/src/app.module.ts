@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthService } from './modules/auth/auth.service';
+import { RolesModule } from './roles/roles.module';
 
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ require('dotenv').config();
       envFilePath: '.env',
     }),
     AuthModule,
+    RolesModule,
   ],
   providers: [AuthService],
 })

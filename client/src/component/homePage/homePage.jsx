@@ -1,14 +1,29 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'universal-cookie';
 
-export const HomePage = () => (
-  <div>
-    <h1>Home page</h1>
-    <div>
-      <NavLink to="/register">Регистрация</NavLink>
-    </div>
-    <div>
-      <NavLink to="/auth">Авторизация</NavLink>
-    </div>
-  </div>
-);
+import { Header } from './header/header';
+
+export const HomePage = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const cookies = new Cookies();
+    const fetchUser = async () => {
+      // const userRaw = await fetch('api/user?token=234234234');
+      const userRaw = cookies.get('token');
+
+      setUser(userRaw);
+      console.log(user);
+    };
+
+    fetchUser();
+  }, []);
+
+  return (
+    <>
+      <div>
+        <Header />
+      </div>
+    </>
+  );
+};

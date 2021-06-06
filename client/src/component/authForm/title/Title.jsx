@@ -7,7 +7,7 @@ const TitleRegisterForm = () => {
 
   return (
     <Typography component="h1" variant="h5">
-      {t('registrationTitle')}
+      {t('authTitle')}
     </Typography>
   );
 };
