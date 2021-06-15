@@ -1,13 +1,14 @@
-.grid {
-  width: 100%;
-  margin: auto;
-  justify-content: center;
-}
 .container {
   border: 3px solid rgb(13, 97, 175);
   border-radius: 60px 30px;
   margin: 5%;
   padding: 20px;
+}
+
+.grid {
+  width: 100%;
+  margin: auto;
+  justify-content: center;
 }
 
 .gridItem {

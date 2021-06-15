@@ -37,7 +37,6 @@ export default function SwitchLanguage() {
         escapeValue: false,
       },
 
-      keySeparator: false,
       lng: 'ru',
 
       resources,
@@ -59,7 +58,6 @@ export default function SwitchLanguage() {
         escapeValue: false,
       },
 
-      keySeparator: false,
       lng: 'en',
 
       resources,

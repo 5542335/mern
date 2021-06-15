@@ -1,0 +1,49 @@
+.grow {
+    flex-grow: 1,
+  }
+  .inputInput {
+    padding: 1px,
+    'padding-left': 20px,
+    width: '100%',
+    
+  }
+  .inputRoot {
+    color: 'inherit',
+  }
+  .menuButton {
+    margin-right: 20px,
+  }
+  .search {
+    
+    background-color: #FFFFFF, 0.15,
+    border-radius: 1px solid #FFFFFF,
+    margin-left: 0,
+    margin-right: 20px,
+    position: 'relative',
+    width: '100%',
+  }
+  .search:hover {
+      background-color: fade(#FFFFFF, 0.25),
+    }
+  .searchIcon {
+    align-items: 'center',
+    display: 'flex',
+    height: '100%',
+    justify-сontent: 'center',
+    padding: theme.spacing(0, 2),
+    pointer-events: 'none',
+    position: 'absolute',
+  }
+  .sectionDesktopIsLogin {
+    display: 'none',
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+    }
+  }
+  .sectionDesktopNoLogin: {
+    display: 'none',
+    
+  }
+  .title {
+    display: 'none',
+  }

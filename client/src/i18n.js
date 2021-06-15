@@ -23,7 +23,6 @@ i18n
       escapeValue: false, // react already safes from xss
     },
 
-    keySeparator: false,
     lng: 'ru',
 
     resources,

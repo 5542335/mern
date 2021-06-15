@@ -6,6 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthService } from './modules/auth/auth.service';
 import { RolesModule } from './roles/roles.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 require('dotenv').config();
 
@@ -20,6 +21,7 @@ require('dotenv').config();
     }),
     AuthModule,
     RolesModule,
+    ProfileModule,
   ],
   providers: [AuthService],
 })

@@ -1,21 +1,21 @@
 import React, { useCallback } from 'react';
-import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { useHistory, useLocation } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import Cookies from 'universal-cookie';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import Cookies from 'universal-cookie';
 
-import { SignupForm } from '../../registerForm/RegisterPage';
-import SwitchLanguage from './ru-en';
+import { routeNames } from '../../../constants/routes';
+import { UserMenu } from './userMenu';
+import SwitchLanguage from './switchLangButton';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
+
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -83,26 +83,27 @@ const useStyles = makeStyles((theme) => ({
 
 export const Header = () => {
   const classes = useStyles();
+  const cookies = new Cookies();
+  const token = cookies.get('token');
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const history = useHistory();
 
-  const isMenuOpen = Boolean(anchorEl);
+  const menuId = 'primary-search-account-menu';
+
+  const location = useLocation();
 
   const handleProfileMenuOpen = useCallback((event) => {
     setAnchorEl(event.currentTarget);
   }, []);
 
-  const handleMenuClose = useCallback(() => {
-    setAnchorEl(null);
+  const handleRedirectToRegister = useCallback(() => {
+    history.push('/register');
   }, []);
-  const menuId = 'primary-search-account-menu';
-  const cookies = new Cookies();
-
-  const token = cookies.get('token');
 
   const loginButton = (
     <div className={classes.sectionDesktopNoLogin}>
       <SwitchLanguage />
-      <Button color="inherit" onClick={SignupForm}>
+      <Button color="inherit" onClick={handleRedirectToRegister}>
         Login
       </Button>
     </div>
@@ -124,24 +125,6 @@ export const Header = () => {
     </div>
   );
 
-  //   if (token) {
-  //     return logOutButton || loginButton;
-  //   }
-
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Личный кабинет</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Выйти</MenuItem>
-    </Menu>
-  );
   const { t } = useTranslation();
 
   return (
@@ -152,7 +135,7 @@ export const Header = () => {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            {routeNames[location.pathname]}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -172,7 +155,7 @@ export const Header = () => {
         </Toolbar>
       </AppBar>
 
-      {renderMenu}
+      <UserMenu menuId={menuId} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
     </div>
   );
 };

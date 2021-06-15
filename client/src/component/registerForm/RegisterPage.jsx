@@ -8,7 +8,7 @@ import { Alert } from '@material-ui/lab';
 import { NavLink, useHistory } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
-import SwitchLanguage from '../homePage/header/ru-en';
+import SwitchLanguage from '../homePage/header/switchLangButton';
 import CustomTextField from './body/body';
 import TitleRegisterForm from './title/Title';
 import SubmitButton from './submitSection/SubmitButton';
@@ -23,13 +23,7 @@ const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4}
 
 export const SignupForm = () => {
   const [serverError, setServerError] = useState(null);
-  // const errorAlert = useCallback(() => {
-  //   serverError && (
-  //     <Alert variant="filled" severity="error">
-  //       {serverError}
-  //     </Alert>
-  //   );
-  // }, []);
+
   const cookies = new Cookies();
   const history = useHistory();
   const { t } = useTranslation();
@@ -50,7 +44,7 @@ export const SignupForm = () => {
           cookies.set('token', token);
 
           history.push('/');
-        } else {
+
           const { message } = data;
 
           setServerError(message);
@@ -61,12 +55,19 @@ export const SignupForm = () => {
     },
 
     validationSchema: Yup.object({
-      acceptedTerms: Yup.boolean().required(t('required')).oneOf([true], 'You must accept the terms and conditions.')
-        .touched,
-      email: Yup.string().email('Неверный email адрес').required(t('required')),
-      firstName: Yup.string().matches(nameRegex, t('nameMatches')).max(32, t('nameMaxLength')).required(t('required')),
-      lastName: Yup.string().matches(nameRegex, t('nameMatches')).max(32, t('nameMaxLength')).required(t('required')),
-      password: Yup.string().matches(passwordRegex, t('passwordMatches')).required(t('required')),
+      acceptedTerms: Yup.boolean()
+        .required(t('validation.required'))
+        .oneOf([true], 'You must accept the terms and conditions.'),
+      email: Yup.string().email(t('validation.invalidEmail')).required(t('validation.required')),
+      firstName: Yup.string()
+        .matches(nameRegex, t('validation.nameMatches'))
+        .max(32, t('validation.nameMaxLength'))
+        .required(t('validation.required')),
+      lastName: Yup.string()
+        .matches(nameRegex, t('validation.nameMatches'))
+        .max(32, t('validation.nameMaxLength'))
+        .required(t('validation.required')),
+      password: Yup.string().matches(passwordRegex, t('validation.passwordMatches')).required(t('validation.required')),
     }),
   });
 
@@ -86,7 +87,7 @@ export const SignupForm = () => {
               <Grid item xs={12} sm={7} md={5}>
                 <CustomTextField
                   id="firstName"
-                  label={t('firstName')}
+                  label={t('register.firstName')}
                   name="firstName"
                   type="text"
                   autoComplete="Имя"
@@ -97,7 +98,7 @@ export const SignupForm = () => {
               <Grid item xs={12} sm={7} md={5}>
                 <CustomTextField
                   id="lastName"
-                  label={t('lastName')}
+                  label={t('register.lastName')}
                   name="lastName"
                   type="text"
                   autoComplete="Фамилия"
@@ -108,7 +109,7 @@ export const SignupForm = () => {
               <Grid item xs={12} sm={7} md={5}>
                 <CustomTextField
                   id="email"
-                  label={t('email')}
+                  label={t('register.email')}
                   name="email"
                   type="email"
                   autoComplete="Почта"
@@ -119,7 +120,7 @@ export const SignupForm = () => {
               <Grid item xs={12} sm={7} md={5}>
                 <CustomTextField
                   id="password"
-                  label={t('password')}
+                  label={t('register.password')}
                   name="password"
                   type="password"
                   autoComplete="Пароль"
@@ -132,14 +133,14 @@ export const SignupForm = () => {
               <Agreements onChange={formik.handleChange} value={formik.values.acceptedTerms} />
             </Grid>
             <Grid container className="grid">
-              <NavLink to="/auth">{t('haveAccount')}</NavLink>
+              <NavLink to="/auth">{t('register.haveAccount')}</NavLink>
             </Grid>
             <Grid container spacing={1} className="grid">
               <Grid item xs={6} className="gridItem">
                 <SubmitButton disabled={!formik.isValid || !formik.dirty} color="primary" />
                 <GoogleLogin
                   clientId="631572139627-994glqmtsdnvjkaf5g7qo450mvhptbb5.apps.googleusercontent.com"
-                  buttonText="Sigh up"
+                  buttonText={t('signUp')}
                   onSuccess={responseGoogle}
                   onFailure={responseGoogle}
                 />
@@ -147,7 +148,7 @@ export const SignupForm = () => {
             </Grid>
           </form>
         </div>
-        <NavLink to="/">На главную</NavLink>
+        <NavLink to="/">{t('toHome')}</NavLink>
       </Container>
 
       {serverError && (

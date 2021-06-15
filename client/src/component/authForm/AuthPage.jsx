@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import GoogleLogin from 'react-google-login';
 import { CssBaseline, Container, Grid } from '@material-ui/core';
-import { NavLink } from 'react-router-dom';
+import Cookies from 'universal-cookie';
+import { Alert } from '@material-ui/lab';
+import { NavLink, useHistory } from 'react-router-dom';
 
 import CustomTextField from './body/body';
 import TitleRegisterForm from './title/Title';
 import SubmitButton from './submitSection/SubmitButton';
-import SwitchLanguage from '../homePage/header/ru-en';
+import SwitchLanguage from '../homePage/header/switchLangButton';
 import '../../index.css';
 
 const responseGoogle = (response) => {
@@ -18,18 +20,36 @@ const responseGoogle = (response) => {
 const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/);
 
 export const AuthForm = () => {
+  const [serverError, setServerError] = useState(null);
+  const cookies = new Cookies();
+  const history = useHistory();
   const { t } = useTranslation();
   const formik = useFormik({
     initialValues: { email: '', password: '' },
-    onSubmit: (values) => {
-      // TODO set token to cookie, display alert
-      fetch('/api/auth/login', {
-        body: JSON.stringify(values),
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        method: 'POST',
-      });
+    onSubmit: async (values) => {
+      try {
+        const response = await fetch('/api/auth/login', {
+          body: JSON.stringify(values),
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+          },
+          method: 'POST',
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          const { token } = data;
+
+          cookies.set('token', token);
+
+          history.push('/');
+          const { message } = data;
+
+          setServerError(message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     validationSchema: Yup.object({
@@ -37,8 +57,6 @@ export const AuthForm = () => {
       password: Yup.string().matches(passwordRegex, t('passwordMatches')).required(t('required')),
     }),
   });
-
-  // console.log(formik);
 
   return (
     <>
@@ -95,6 +113,11 @@ export const AuthForm = () => {
         </div>
         <NavLink to="/">На главную</NavLink>
       </Container>
+      {serverError && (
+        <Alert variant="filled" severity="error">
+          {serverError}
+        </Alert>
+      )}
     </>
   );
 };
