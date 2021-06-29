@@ -1,9 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Checkbox, Button, Dialog, DialogActions, DialogContent } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
-const Agreements = () => {
+const Agreements = ({ onChange, value }) => {
   const [open, setOpen] = useState(false);
+
+  console.log(value);
 
   const handleClickOpen = useCallback(() => {
     setOpen(true);
@@ -17,9 +20,14 @@ const Agreements = () => {
 
   return (
     <Box>
-      <Checkbox color="primary" name="acceptedTerms" inputProps={{ 'aria-label': 'secondary checkbox' }} />
+      <Checkbox
+        color="primary"
+        name="acceptedTerms"
+        inputProps={{ 'aria-label': 'secondary checkbox' }}
+        onClick={onChange}
+      />
 
-      <Button onClick={handleClickOpen}>{t('accordance')}</Button>
+      <Button onClick={handleClickOpen}>{t('register.accordance')}</Button>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
@@ -46,11 +54,16 @@ const Agreements = () => {
           </h4>
         </DialogContent>
         <DialogActions onClick={handleClose} color="primary">
-          {t('close')}
+          {t('register.close')}
         </DialogActions>
       </Dialog>
     </Box>
   );
+};
+
+Agreements.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.bool.isRequired,
 };
 
 export default Agreements;

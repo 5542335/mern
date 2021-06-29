@@ -8,7 +8,7 @@ const SubmitButton = ({ type = 'submit', variant = 'contained', color, disabled 
 
   return (
     <Button disabled={disabled} type={type} variant={variant} color={color}>
-      {t('register.registration')}
+      {t('register.authorization')}
     </Button>
   );
 };

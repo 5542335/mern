@@ -2,13 +2,13 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 
-const CustomTextField = ({ id, label, name, autoComplete, formik, type, helperText, required }) => (
+const CustomTextField = ({ id, label, name, autoComplete, formik, type, helperText }) => (
   <>
     <TextField
       variant="outlined"
       margin="normal"
       type={type}
-      required={required}
+      required
       fullWidth
       id={id}
       label={label}
@@ -31,7 +31,6 @@ CustomTextField.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string,
-  required: PropTypes.bool,
   type: PropTypes.string,
 };
 
@@ -42,7 +41,6 @@ CustomTextField.defaultProps = {
   id: 'somestring',
   label: 'somestring',
   name: 'somestring',
-  required: true,
   type: 'somestring',
 };
 
