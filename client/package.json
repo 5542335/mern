@@ -2,7 +2,6 @@
   "name": "mern",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -19,6 +18,7 @@
     "express-handlebars": "^5.3.0",
     "formik": "^2.2.6",
     "history": "^4.10.1",
+    "http-proxy-middleware": "^0.19.1",
     "i18next": "^20.2.2",
     "libphonenumber-js": "^1.9.16",
     "mongoose": "^5.12.7",

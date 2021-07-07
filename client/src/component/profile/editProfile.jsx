@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,7 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as Yup from 'yup';
-// import { Alert } from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -16,28 +16,43 @@ import CustomTextField from '../registerForm/body/Body';
 
 import '../../index.css';
 
-// const getObjectsDiff = (initialValues, values) => {
+const initialValues = { email: '', firstName: '', lastName: '' };
 
-// }
+const getObjectsDiff = (object1, object2) => {
+  // 1. Получить ключ и значение у первого объекта
+  // 2. посмотреть, существует ли такой ключ у второго объекта
+  // 3. Если нет - создать это свойство в новом объекте
+  // 4. Если да - проверить совпадает ли значение у двух объектов
+  // 5. Если не совпадают - выполнить пункт 3.
+  const result = [];
+
+  Object.entries(object1).forEach(([key, value]) =>
+    Object.entries(object2).forEach(([key, value]) => {
+      if (object1[key] === object2[value] && object1[key] === object2[value]) result.push(object2);
+    }),
+  );
+};
 
 export const EditProfile = ({ open, onClose, userId }) => {
+  const [successPatch, setSuccessPatch] = useState(null);
   const { t } = useTranslation();
   const nameRegex = new RegExp(/[a-zA-Z]/);
 
   const formik = useFormik({
-    initialValues: { email: '', firstName: '', lastName: '' },
+    initialValues,
     onSubmit: async (values) => {
       try {
-        // const patchUserDto = getObjectsDiff(initialValues, values);
+        const patchUserDto = getObjectsDiff(values, initialValues);
+
         const response = await fetch(`/api/user/${userId}`, {
-          body: JSON.stringify(values),
+          body: JSON.stringify(patchUserDto),
           headers: { 'Content-type': 'application/json' },
           method: 'PATCH',
         });
         const data = await response.json();
 
         if (response.ok) {
-          console.log(data);
+          setSuccessPatch(data);
         }
       } catch (error) {
         console.log(error);
@@ -102,19 +117,17 @@ export const EditProfile = ({ open, onClose, userId }) => {
           </DialogActions>
         </form>
       </Dialog>
-      {/* {serverError && (
-        <Alert variant="filled" severity="error">
-          {serverError}
+
+      {successPatch && (
+        <Alert variant="filled" severity={successPatch ? 'success' : 'error'}>
+          {successPatch ? 'Данные изменены' : 'Ошибка'}
         </Alert>
-      )} */}
+      )}
     </>
   );
 };
 
 EditProfile.propTypes = {
-  //   email: PropTypes.string.isRequired,
-  //   firstName: PropTypes.string.isRequired,
-  //   lastName: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   userId: PropTypes.string.isRequired,

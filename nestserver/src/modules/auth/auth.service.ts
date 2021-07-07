@@ -9,11 +9,16 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginUserDto } from '../auth/dto/login-user.dto';
 import { User } from '../user/schemas/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Token, TokenDocument } from './schemas/token.schema';
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
@@ -45,10 +50,20 @@ export class AuthService {
     const payload = { email: user.email, id: user.id };
     return {
       token: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload)
     };
   }
 
-  private async validateUser(loginUserDto: LoginUserDto) {
+  async saveToken (userId: any, refreshToken: string) {
+    const tokenData = await this.tokenModel.findOne({ user: userId})
+    if(tokenData) {
+      tokenData.refreshToken = refreshToken
+      return tokenData.save()
+    }
+   
+  }
+
+  async validateUser(loginUserDto: LoginUserDto) {
     const user = await this.userService.getUserByEmail(loginUserDto.email);
     const passwordEquals = await bcrypt.compare(
       loginUserDto.password,
