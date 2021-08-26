@@ -1,0 +1,45 @@
+form textarea[type="text"] {
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: whitesmoke;
+    resize: none;
+}
+form {
+    margin-bottom: 56px;
+}
+.commentButton {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    float: right;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 20px;
+}
+.sendButton {
+    background-color: #065fd4;
+    color: white;
+}
+.sendButton:disabled {
+    color: white;
+    cursor: default;
+    background-color: #cccccc;
+}
+.commentLine {
+    position: absolute;
+    width: 57%;
+    height: 2px;
+    background-color: black;
+    transform: scaleX(0);
+    animation: commentLineScaleIn 0.5s forwards;
+}
+@keyframes commentLineScaleIn {
+    0% {
+        transform: scaleX(0);
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}

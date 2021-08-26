@@ -1,0 +1,49 @@
+.messageContainer {
+    display: grid;
+    grid-template-columns: 36px 1fr 140px;
+    grid-template-rows: 36px auto;
+    height: min-content;
+}
+.FIcon {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    width: 36px;
+    height: 36px;
+}
+.authorAndTime {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    align-self: center;
+    display: flex;
+}
+.time {
+    margin-left: 10px;
+    font-size: 12px;
+    color: #A9A9A9;
+    padding-top: 4px;
+}
+.messageBody {
+    grid-column: 2/4;
+    grid-row-start: 2;
+}
+.messageIconsContainer {
+    grid-column-start: 3;
+    grid-row-start: 3;
+    margin: 8px 0;
+    justify-self: start;
+}
+.likeButton {
+    margin-right: 5px;
+    border: none;
+    border-radius: 70%;
+    cursor: pointer;
+    background-color: inherit;
+}
+.dislikeButton {
+    margin-left: 20px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 70%;
+    cursor: pointer;
+    background-color: inherit;
+}

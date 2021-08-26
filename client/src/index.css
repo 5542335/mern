@@ -1,5 +1,9 @@
+body {
+  margin: 0;
+}
+
 .container {
-  border: 3px solid rgb(13, 97, 175);
+  border: 3px solid teal;
   border-radius: 60px 30px;
   margin: 5%;
   padding: 20px;

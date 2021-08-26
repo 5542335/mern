@@ -10,6 +10,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginUserDto } from '../auth/dto/login-user.dto';
 import { User } from '../user/schemas/user.schema';
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 @Injectable()
 export class AuthService {
@@ -43,12 +44,13 @@ export class AuthService {
 
   private async generateToken(user: User) {
     const payload = { email: user.email, id: user.id };
+
     return {
-      token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload)
     };
   }
 
-  private async validateUser(loginUserDto: LoginUserDto) {
+  async validateUser(loginUserDto: LoginUserDto) {
     const user = await this.userService.getUserByEmail(loginUserDto.email);
     const passwordEquals = await bcrypt.compare(
       loginUserDto.password,

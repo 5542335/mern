@@ -2,22 +2,17 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import GoogleLogin from 'react-google-login';
-import { CssBaseline, Container, Grid } from '@material-ui/core';
+import { Container, Grid } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { NavLink, useHistory } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 
-// import SwitchLanguage from '../homePage/header/switchLangButton';
-import CustomTextField from './body/Body';
-import TitleRegisterForm from './title/Title';
+import CustomTextField from '../shared/customTextField/CustomTextField';
+import TitleRegisterForm from '../shared/formTitle/Title';
 import SubmitButton from './submitSection/SubmitButton';
 import Agreements from './body/Agreement';
 import '../../index.css';
 
-const responseGoogle = (response) => {
-  console.log(response);
-};
 const nameRegex = new RegExp(/[a-zA-Z]/);
 const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/);
 
@@ -74,14 +69,10 @@ export const SignupForm = () => {
   return (
     <>
       <Container component="main" maxWidth="xs" className="container">
-        <CssBaseline />
         <div>
           <form onSubmit={formik.handleSubmit}>
-            {/* <Grid container className="grid">
-              <SwitchLanguage />
-            </Grid> */}
             <Grid container className="grid">
-              <TitleRegisterForm />
+              <TitleRegisterForm text={t('register.registerTitle')} />
             </Grid>
             <Grid container spacing={1} className="grid">
               <Grid item xs={12} sm={7} md={5}>
@@ -138,12 +129,6 @@ export const SignupForm = () => {
             <Grid container spacing={1} className="grid">
               <Grid item xs={6} className="gridItem">
                 <SubmitButton disabled={!formik.isValid || !formik.dirty} color="primary" />
-                <GoogleLogin
-                  clientId="631572139627-994glqmtsdnvjkaf5g7qo450mvhptbb5.apps.googleusercontent.com"
-                  buttonText={t('signUp')}
-                  onSuccess={responseGoogle}
-                  onFailure={responseGoogle}
-                />
               </Grid>
             </Grid>
           </form>

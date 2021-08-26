@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-export const UserMenu = ({ menuId, anchorEl, setAnchorEl }) => {
+export const UserMenu = ({ menuId, anchorEl, setAnchorEl, setToken }) => {
   const cookies = new Cookies();
   const history = useHistory();
   const { t } = useTranslation();
@@ -22,6 +22,7 @@ export const UserMenu = ({ menuId, anchorEl, setAnchorEl }) => {
   const handleLogOut = useCallback(() => {
     setAnchorEl(null);
     cookies.remove('token');
+    setToken(null);
     history.push('/');
   }, []);
 
@@ -42,7 +43,12 @@ export const UserMenu = ({ menuId, anchorEl, setAnchorEl }) => {
 };
 
 UserMenu.propTypes = {
-  anchorEl: PropTypes.node.isRequired,
+  anchorEl: PropTypes.node,
   menuId: PropTypes.string.isRequired,
   setAnchorEl: PropTypes.func.isRequired,
+  setToken: PropTypes.func.isRequired,
+};
+
+UserMenu.defaultProps = {
+  anchorEl: null,
 };

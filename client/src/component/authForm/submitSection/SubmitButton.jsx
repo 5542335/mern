@@ -21,7 +21,7 @@ SubmitButton.propTypes = {
 };
 
 SubmitButton.defaultProps = {
-  color: 'somestring',
+  color: '#000000',
   disabled: false,
   type: 'somestring',
   variant: 'contained',

@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Box, Checkbox, Button, Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
-const Agreements = ({ onChange, value }) => {
+const Agreements = ({ onChange }) => {
   const [open, setOpen] = useState(false);
-
-  console.log(value);
 
   const handleClickOpen = useCallback(() => {
     setOpen(true);
@@ -63,7 +61,6 @@ const Agreements = ({ onChange, value }) => {
 
 Agreements.propTypes = {
   onChange: PropTypes.func.isRequired,
-  value: PropTypes.bool.isRequired,
 };
 
 export default Agreements;

@@ -13,6 +13,7 @@ module.exports = {
   },
   parser: 'babel-eslint',
   rules: {
+    'no-debugger': 0,
     'react/jsx-filename-extension': [2, {
       'extensions': ['.js', '.jsx'],
     }],
