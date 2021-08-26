@@ -3,27 +3,29 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import Cookies from 'universal-cookie';
+import { alpha, makeStyles } from '@material-ui/core/styles';
+import BlurOnIcon from '@material-ui/icons/BlurOn';
+import Link from '@material-ui/core/Link';
+import PropTypes from 'prop-types';
 
-import { routeNames } from '../../constants/routes';
+// import { routeNames } from '../../constants/routes';
 import { UserMenu } from './UserMenu';
 import SwitchLanguage from './SwitchLangButton';
 
 const useStyles = makeStyles((theme) => ({
+  appBar: {
+    backgroundColor: 'teal',
+  },
   grow: {
     flexGrow: 1,
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -39,9 +41,9 @@ const useStyles = makeStyles((theme) => ({
   },
   search: {
     '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-    backgroundColor: fade(theme.palette.common.white, 0.15),
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
     borderRadius: theme.shape.borderRadius,
     marginLeft: 0,
     marginRight: theme.spacing(2),
@@ -81,17 +83,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Header = () => {
+export const Header = ({ token, setToken }) => {
   const classes = useStyles();
-  const cookies = new Cookies();
-  const token = cookies.get('token');
   const [anchorEl, setAnchorEl] = React.useState(null);
   const history = useHistory();
   const { t } = useTranslation();
 
   const menuId = 'primary-search-account-menu';
 
-  const location = useLocation();
+  // const location = useLocation();
 
   const handleProfileMenuOpen = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -134,27 +134,22 @@ export const Header = () => {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            {routeNames[location.pathname]}
+            <Link href="/" color="error">
+              GitFind
+            </Link>
+            <BlurOnIcon />
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder={t('search')}
-              classes={{
-                input: classes.inputInput,
-                root: classes.inputRoot,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div>
           <div className={classes.grow} />
           {token ? logOutButton : loginButton}
         </Toolbar>
       </AppBar>
 
-      <UserMenu menuId={menuId} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+      <UserMenu menuId={menuId} anchorEl={anchorEl} setAnchorEl={setAnchorEl} setToken={setToken} />
     </div>
   );
+};
+
+Header.propTypes = {
+  setToken: PropTypes.func.isRequired,
+  token: PropTypes.string.isRequired,
 };

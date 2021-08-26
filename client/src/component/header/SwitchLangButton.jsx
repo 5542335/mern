@@ -9,6 +9,13 @@ import translationEN from '../../locales/en/translationEN.json';
 import i18n from '../../i18n';
 
 const useStyles = makeStyles((theme) => ({
+  color: {
+    backgroundColor: 'orchid',
+  },
+  palette: {
+    primary: 'amber',
+    secondary: 'pink',
+  },
   root: {
     '& > *': {
       margin: theme.spacing(1),
@@ -67,8 +74,12 @@ export default function SwitchLanguage() {
   return (
     <div className={classes.root}>
       <ButtonGroup variant="contained" color="primary" aria-label="text primary button group">
-        <Button onClick={handleChangeLanguageRu}>Ru</Button>
-        <Button onClick={handleChangeLanguageEn}>En</Button>
+        <Button className={classes.color} onClick={handleChangeLanguageRu}>
+          Ru
+        </Button>
+        <Button className={classes.color} onClick={handleChangeLanguageEn}>
+          En
+        </Button>
       </ButtonGroup>
     </div>
   );

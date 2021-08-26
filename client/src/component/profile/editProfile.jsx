@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -11,40 +11,53 @@ import { Alert } from '@material-ui/lab';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import Collapse from '@material-ui/core/Collapse';
+import Cookies from 'universal-cookie';
 
-import CustomTextField from '../registerForm/body/Body';
+import CustomTextField from '../shared/customTextField/CustomTextField';
 
 import '../../index.css';
 
 const initialValues = { email: '', firstName: '', lastName: '' };
 
-const getObjectsDiff = (object1, object2) => {
-  // 1. Получить ключ и значение у первого объекта
-  // 2. посмотреть, существует ли такой ключ у второго объекта
-  // 3. Если нет - создать это свойство в новом объекте
-  // 4. Если да - проверить совпадает ли значение у двух объектов
-  // 5. Если не совпадают - выполнить пункт 3.
-  const result = [];
+const isEmptyObject = (object) => !Object.keys(object).length;
 
-  Object.entries(object1).forEach(([key, value]) =>
-    Object.entries(object2).forEach(([key, value]) => {
-      if (object1[key] === object2[value] && object1[key] === object2[value]) result.push(object2);
-    }),
-  );
+const getObjectsDiff = (object1, object2) => {
+  const result = {};
+
+  Object.entries(object1).forEach(([key, value]) => {
+    if (typeof value === 'object' && typeof object2[key] === 'object') {
+      const objectsDiff = getObjectsDiff(value, object2[key]);
+
+      if (!isEmptyObject(objectsDiff)) {
+        result[key] = getObjectsDiff(value, object2[key]);
+      }
+    } else if (value !== object2[key]) {
+      result[key] = object2[key];
+    }
+  });
+
+  return result;
 };
 
-export const EditProfile = ({ open, onClose, userId }) => {
+export const EditProfile = ({ open, onClose, setUser, userId }) => {
   const [successPatch, setSuccessPatch] = useState(null);
+  const [openAlert, setOpenAlert] = useState(false);
   const { t } = useTranslation();
   const nameRegex = new RegExp(/[a-zA-Z]/);
+
+  const closeAlert = useCallback(() => {
+    setOpenAlert(false);
+  }, []);
 
   const formik = useFormik({
     initialValues,
     onSubmit: async (values) => {
       try {
-        const patchUserDto = getObjectsDiff(values, initialValues);
-
-        const response = await fetch(`/api/user/${userId}`, {
+        const patchUserDto = getObjectsDiff(initialValues, values);
+        const cookies = new Cookies();
+        const token = cookies.get('token');
+        const response = await fetch(`/api/user/${userId}?token=${token}`, {
           body: JSON.stringify(patchUserDto),
           headers: { 'Content-type': 'application/json' },
           method: 'PATCH',
@@ -53,9 +66,16 @@ export const EditProfile = ({ open, onClose, userId }) => {
 
         if (response.ok) {
           setSuccessPatch(data);
+          setOpenAlert(true);
+          setUser(data);
+        } else {
+          setSuccessPatch(false);
+          setOpenAlert(true);
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        onClose();
       }
     },
 
@@ -111,17 +131,25 @@ export const EditProfile = ({ open, onClose, userId }) => {
             <Button onClick={onClose} color="primary">
               {t('cancel')}
             </Button>
-            <Button onClick={onClose} color="primary" type="submit">
+            <Button color="primary" type="submit">
               {t('save')}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
-      {successPatch && (
-        <Alert variant="filled" severity={successPatch ? 'success' : 'error'}>
-          {successPatch ? 'Данные изменены' : 'Ошибка'}
-        </Alert>
+      {successPatch ? (
+        <Collapse in={openAlert}>
+          <Alert variant="filled" onClose={closeAlert} severity="success">
+            Данные изменены
+          </Alert>
+        </Collapse>
+      ) : (
+        <Collapse in={openAlert}>
+          <Alert variant="filled" onClose={closeAlert} severity="error">
+            Ошибка
+          </Alert>
+        </Collapse>
       )}
     </>
   );
@@ -130,5 +158,6 @@ export const EditProfile = ({ open, onClose, userId }) => {
 EditProfile.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
+  setUser: PropTypes.func.isRequired,
   userId: PropTypes.string.isRequired,
 };

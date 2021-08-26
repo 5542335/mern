@@ -5,10 +5,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 import { UserService } from './user.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('api/user')
 export class UserController {
   constructor(private userService: UserService) {}
-  @UseGuards(JwtAuthGuard)
   @Get()
   findUser(@Query('token') token: string) {
     return this.userService.getUser(token);

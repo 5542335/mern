@@ -56,13 +56,14 @@ async getUserById(id: string) {
         HttpStatus.BAD_REQUEST,
       );
     }
+    return user
   };
 
   async editPass (id: string, changePassDto: ChangePassDto): Promise<User> {
-    this.validatePassword(id, changePassDto);
+    await this.validatePassword(id, changePassDto);
 
     const newHashPassword = await bcrypt.hash(changePassDto.newPassword, 5);
 
-    return this.editUser(id, {password: newHashPassword})
+    return this.userModel.findByIdAndUpdate(id, {password: newHashPassword}, { new: true, useFindAndModify: false }).exec();
   }
 }

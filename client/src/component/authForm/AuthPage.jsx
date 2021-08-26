@@ -3,24 +3,29 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import GoogleLogin from 'react-google-login';
-import { CssBaseline, Container, Grid } from '@material-ui/core';
+import { Container, Grid } from '@material-ui/core';
 import Cookies from 'universal-cookie';
 import { Alert } from '@material-ui/lab';
 import { NavLink, useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-import CustomTextField from './body/Body';
-import TitleRegisterForm from './title/Title';
+import CustomTextField from '../shared/customTextField/CustomTextField';
+import TitleRegisterForm from '../shared/formTitle/Title';
 import SubmitButton from './submitSection/SubmitButton';
 // import SwitchLanguage from '../homePage/header/switchLangButton';
 import '../../index.css';
 
-const responseGoogle = (response) => {
-  console.log(response);
+const responseGoogle = (setGoogleResponse) => (response) => {
+  setGoogleResponse(response);
 };
 const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/);
 
-export const AuthForm = () => {
+export const AuthForm = ({ setToken }) => {
   const [serverError, setServerError] = useState(null);
+  const [googleResponse, setGoogleResponse] = useState(null);
+
+  console.log(googleResponse);
+
   const cookies = new Cookies();
   const history = useHistory();
   const { t } = useTranslation();
@@ -41,6 +46,7 @@ export const AuthForm = () => {
           const { token } = data;
 
           cookies.set('token', token);
+          setToken(token);
 
           history.push('/');
           const { message } = data;
@@ -61,14 +67,10 @@ export const AuthForm = () => {
   return (
     <>
       <Container component="main" maxWidth="xs" className="container">
-        <CssBaseline />
         <div>
           <form onSubmit={formik.handleSubmit}>
-            {/* <Grid container className="grid">
-              <SwitchLanguage />
-            </Grid> */}
             <Grid container className="grid">
-              <TitleRegisterForm />
+              <TitleRegisterForm text={t('register.authTitle')} />
             </Grid>
             <Grid container spacing={1} className="grid">
               <Grid item xs={12}>
@@ -104,8 +106,8 @@ export const AuthForm = () => {
                 <GoogleLogin
                   clientId="631572139627-994glqmtsdnvjkaf5g7qo450mvhptbb5.apps.googleusercontent.com"
                   buttonText={t('signUp')}
-                  onSuccess={responseGoogle}
-                  onFailure={responseGoogle}
+                  onSuccess={responseGoogle(setGoogleResponse)}
+                  onFailure={responseGoogle(setGoogleResponse)}
                 />
               </Grid>
             </Grid>
@@ -120,4 +122,8 @@ export const AuthForm = () => {
       )}
     </>
   );
+};
+
+AuthForm.propTypes = {
+  setToken: PropTypes.func.isRequired,
 };
