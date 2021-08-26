@@ -8,7 +8,7 @@ import App from './App';
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   headers: {
-    authorization: `Bearer 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`,
+    authorization: `Bearer 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`,
   },
   uri: 'https://api.github.com/graphql',
 });
