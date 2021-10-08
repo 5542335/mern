@@ -41,6 +41,7 @@
     "eslint-plugin-sort-keys-fix": "^1.1.1",
     "mongodb": "^3.6.6",
     "mongoose": "^5.12.10",
+    "njwt": "^0.4.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -50,7 +51,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
-    "@nestjs/schematics": "^7.3.0",
+    "@nestjs/schematics": "^7.3.1",
     "@nestjs/testing": "^7.6.15",
     "@tsed/mongoose": "^6.49.3",
     "@types/bcrypt": "^5.0.0",

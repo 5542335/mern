@@ -18,10 +18,10 @@ export class Comment {
   repoId: string;
 
   @Prop()
-  numberOfLikes: number;
+  like: string[];
 
   @Prop()
-  numberOfDislikes: number;
+  dislike: string[];
 
   @Prop()
   timestamp: number;

@@ -1,0 +1,36 @@
+.modalContainer {
+  display: flex;
+  flex-direction: column;
+  min-width: 700px;
+}
+.add {
+  background-color: #065fd4;
+  color: white;
+  margin-left: 5px;
+}
+.add:hover {
+  opacity: 0.9;
+}
+.cancel {
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  float: right;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: 20px;
+  padding: 10px 20px;
+}
+.table {
+  min-width: 650;
+}
+.modalTitle {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 50px;
+  align-self: center;
+}
+.selected {
+  background-color: teal !important;
+  color: #ffffff !important;
+}

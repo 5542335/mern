@@ -6,54 +6,71 @@ import PropTypes from 'prop-types';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
+import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
 import IconButton from '@material-ui/core/IconButton';
+import { useSelector } from 'react-redux';
 
 import { SimpleTab } from './components/TabPanel';
 import { ChartLanguage } from './components/Diagram';
 import './repository.css';
 import { SimpleBackdrop } from '../shared/loading/BackDrop';
-import { getRepositoryQuery } from '../../queries/githubQueries';
+import { getRepositoryQuery } from '../../queries/githubGetRepoQuery';
 import { Comments } from './components/comments/Comments';
+import { useReadme } from './hooks/useReadme';
 
 export const Repository = ({ location }) => {
+  const tokenStore = useSelector((state) => state.token);
   // eslint-disable-next-line no-unused-vars
   const [_, owner, name] = location.pathname.split('/');
   const { data, loading, error } = useQuery(getRepositoryQuery(name, owner));
-  const [readme, setReadme] = useState('');
   const [heart, setHeart] = useState(false);
+  const readme = useReadme(owner, name);
 
-  const likeValues = { likedRepositories: `${data?.repository.id}`, userEmail: 'alex@mail.ru' };
+  const values = { repositoryId: `${data?.repository.id}`, token: tokenStore };
+  const fetchLikeRepo = useCallback(
+    async (path, heartState) => {
+      const response = await fetch(`/api/user/${path}?token=${tokenStore}`, {
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        method: 'PATCH',
+      });
+
+      if (response.ok) {
+        setHeart(heartState);
+      }
+    },
+    [values],
+  );
 
   const handleHeartClickLike = useCallback(async () => {
-    const response = await fetch('/api/likedRepo/like', {
-      body: JSON.stringify(likeValues),
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      method: 'POST',
-    });
-
-    if (response.ok) {
-      setHeart(true);
+    if (heart) {
+      fetchLikeRepo('dislike', false);
+    } else {
+      fetchLikeRepo('like', true);
     }
   });
 
-  const handleHeartClickDislike = useCallback(() => {
-    setHeart(false);
-  }, []);
-
   useEffect(() => {
-    const fetchReadme = async () => {
-      const readmeRaw = await fetch(`https://raw.githubusercontent.com/${owner}/${name}/master/README.md`);
-      const readmeJSON = await readmeRaw.text();
+    if (data && tokenStore) {
+      const fetchLike = async () => {
+        const response = await fetch(`/api/user/getLike?token=${tokenStore}`, {
+          body: JSON.stringify(values),
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+          },
+          method: 'POST',
+        });
 
-      setReadme(readmeJSON);
-    };
+        if ((await response.text()) === 'true') {
+          setHeart(true);
+        }
+      };
 
-    fetchReadme();
-  }, []);
+      fetchLike();
+    }
+  }, [tokenStore, data]);
 
   if (loading) {
     return <SimpleBackdrop />;
@@ -74,15 +91,18 @@ export const Repository = ({ location }) => {
           clickable
         />
         <img src={data.repository.openGraphImageUrl} alt="" id="repoImg" />
-        <div className="heart">
-          <IconButton type="submit">
-            {heart ? (
-              <FavoriteIcon color="error" fontSize="medium" onClick={handleHeartClickDislike} />
-            ) : (
-              <FavoriteBorderOutlinedIcon fontSize="medium" onClick={handleHeartClickLike} />
-            )}
-          </IconButton>
-        </div>
+        {tokenStore ? (
+          <div className="heart">
+            <IconButton type="submit">
+              <FavoriteTwoToneIcon
+                className={heart ? 'liked-repository' : 'no-liked-repository'}
+                fontSize="medium"
+                titleAccess={heart ? 'Убрать из понравившихся' : 'Добавить в понравившиеся'}
+                onClick={handleHeartClickLike}
+              />
+            </IconButton>
+          </div>
+        ) : null}
       </div>
       <div className="repository-container">
         <div className="readme">

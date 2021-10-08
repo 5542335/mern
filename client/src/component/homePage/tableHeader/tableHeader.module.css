@@ -1,0 +1,15 @@
+.tableCell1 {
+  padding: 0 !important;
+  text-align: center !important;
+  width: 25%;
+}
+.tableCell2 {
+  width: 12%;
+}
+.tableCellOptions {
+  background-color: Gainsboro;
+  width: 5%;
+}
+.tableHead {
+  background-color: Gainsboro;
+}

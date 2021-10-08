@@ -7,18 +7,19 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as Yup from 'yup';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import Collapse from '@material-ui/core/Collapse';
-import Cookies from 'universal-cookie';
+import { useSelector } from 'react-redux';
 
 import CustomTextField from '../shared/customTextField/CustomTextField';
 
-import '../../index.css';
+import './profile.css';
 
 export const EditPass = ({ open, onClose, userId }) => {
+  const tokenStore = useSelector((state) => state.token);
   const [successPatch, setSuccessPatch] = useState(null);
   const [isLoading, updateLoadingState] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
@@ -34,9 +35,7 @@ export const EditPass = ({ open, onClose, userId }) => {
     onSubmit: async (values) => {
       try {
         updateLoadingState(true);
-        const cookies = new Cookies();
-        const token = cookies.get('token');
-        const response = await fetch(`/api/user/${userId}/change-password?token=${token}`, {
+        const response = await fetch(`/api/user/${userId}/change-password?token=${tokenStore}`, {
           body: JSON.stringify(values),
           headers: { 'Content-type': 'application/json' },
           method: 'PATCH',
@@ -65,7 +64,7 @@ export const EditPass = ({ open, onClose, userId }) => {
   return (
     <>
       <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">{t('profile.editProfile')}</DialogTitle>
+        <DialogTitle id="form-dialog-title">Изменение пароля</DialogTitle>
         <form onSubmit={formik.handleSubmit}>
           <DialogContent>
             <DialogContentText>{t('profile.newData')}</DialogContentText>
@@ -102,13 +101,13 @@ export const EditPass = ({ open, onClose, userId }) => {
         </form>
       </Dialog>
       {!successPatch?.message ? (
-        <Collapse in={openAlert}>
+        <Collapse in={openAlert} className="alert">
           <Alert variant="filled" onClose={closeAlert} severity="success">
             Пароль изменен
           </Alert>
         </Collapse>
       ) : (
-        <Collapse in={openAlert}>
+        <Collapse in={openAlert} className="alert">
           <Alert variant="filled" onClose={closeAlert} severity="error">
             {successPatch.message}
           </Alert>

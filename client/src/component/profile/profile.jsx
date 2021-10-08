@@ -1,17 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import Cookies from 'universal-cookie';
-import { Container, Grid } from '@material-ui/core';
+import React, { useState, useCallback } from 'react';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import { EditProfile } from './editProfile';
 import { EditPass } from './editPass';
-
-import '../../index.css';
+import './profile.css';
 
 export const Profile = () => {
-  const [user, setUser] = useState(null);
+  const userStore = useSelector((state) => state.user);
   const [open, setOpen] = useState(false);
   const [openPass, setOpenPass] = useState(false);
 
@@ -33,56 +30,34 @@ export const Profile = () => {
     setOpenPass(false);
   }, []);
 
-  useEffect(() => {
-    const cookies = new Cookies();
-    const fetchUser = async () => {
-      const token = cookies.get('token');
-      const userRaw = await fetch(`api/user?token=${token}`);
-      const data = await userRaw.json();
-
-      setUser(data);
-    };
-
-    fetchUser();
-  }, []);
-
-  const { _id: id } = user || {};
+  const { _id: id } = userStore || {};
 
   return (
     <>
-      <Container maxWidth="sm" className="container">
-        <Grid container className="grid">
-          <Grid item>
-            <Typography component="h1" variant="h5">
-              {t('profile.profile')}
-            </Typography>
-          </Grid>
-          <Grid container className="grid">
-            <Grid item>
-              <h2>
-                {t('register.email')}: {user?.email}
-              </h2>
-              <h2>
-                {t('register.firstName')}: {user?.firstName}
-              </h2>
-              <h2>
-                {t('register.lastName')}: {user?.lastName}
-              </h2>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid container className="grid">
-          <Button variant="outlined" color="primary" className="gridItem" onClick={handleClickOpen}>
-            {t('edit')}
-          </Button>
-          <Button variant="outlined" color="primary" className="gridItem" onClick={handleClickOpenPass}>
-            Изменить пароль
-          </Button>
-        </Grid>
+      <div className="profile-container">
+        <div className="profile">
+          <div className="title">{t('profile.profile')}</div>
 
-        <EditProfile open={open} onClose={handleClose} userId={id} setUser={setUser} />
-        <EditPass open={openPass} onClose={handleClosePass} userId={id} />
-      </Container>
+          <div className="email">{t('register.email')}:</div>
+          <div className="emailValue">{userStore?.email}</div>
+          <div className="firstName">{t('register.firstName')}:</div>
+          <div className="firstNameValue">{userStore?.firstName}</div>
+          <div className="lastName">{t('register.lastName')}:</div>
+          <div className="lastNameValue">{userStore?.lastName}</div>
+
+          <div className="buttons">
+            <Button variant="outlined" color="primary" className="gridItem" onClick={handleClickOpen}>
+              {/* {t('edit')} */} Редактировать
+            </Button>
+            <Button variant="outlined" color="primary" className="gridItem" onClick={handleClickOpenPass}>
+              Изменить пароль
+            </Button>
+          </div>
+
+          <EditProfile open={open} onClose={handleClose} userId={id} />
+          <EditPass open={openPass} onClose={handleClosePass} userId={id} />
+        </div>
+      </div>
     </>
   );
 };

@@ -5,7 +5,6 @@ import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import Fab from '@material-ui/core/Fab';
 
 const useStyles1 = makeStyles((theme) => ({
   fab: {
@@ -47,9 +46,7 @@ export const TablePaginationActions = (props) => {
       <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
         <KeyboardArrowLeft />
       </IconButton>
-      <Fab size="small" color="default" className={classes.fab}>
-        {page + 1}
-      </Fab>
+      {page + 1}
       <IconButton onClick={handleNextButtonClick} aria-label="next page">
         <KeyboardArrowRight />
       </IconButton>

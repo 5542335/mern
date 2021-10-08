@@ -42,6 +42,12 @@ export class AuthService {
     return this.generateToken(user);
   }
 
+  async refreshToken (token: string) {
+    const user = await this.userService.getUser(token);
+    
+    return await this.generateToken(user);
+  }
+
   private async generateToken(user: User) {
     const payload = { email: user.email, id: user.id };
 

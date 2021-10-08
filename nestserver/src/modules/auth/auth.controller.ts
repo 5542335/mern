@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Query, Get } from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
+
 
 @Controller('api/auth')
 export class AuthController {
@@ -15,5 +16,10 @@ export class AuthController {
   @Post('/registration')
   registartion(@Body() createUserDto: CreateUserDto) {
     return this.authService.registration(createUserDto);
+  }
+
+  @Get('/refresh-token')
+  refreshToken(@Query() token: string) {
+    return this.authService.refreshToken(token);
   }
 }

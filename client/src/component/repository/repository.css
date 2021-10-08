@@ -1,84 +1,99 @@
 .repository-container {
-    display: grid;
-    grid-template-columns: 60% 20% 20%;
-    grid-template-rows: 100px 100px 100px 100px 100px 100px 100px 100px;
-    grid-auto-rows: minmax(100px, auto);
+  display: grid;
+  grid-template-columns: 60% 20% 20%;
+  grid-template-rows: 100px 100px 100px 100px 100px 100px 100px 100px;
+  grid-auto-rows: minmax(100px, auto);
 }
 .readme {
-    grid-column-start: 1;
-    grid-row-start: 1;
+  grid-column-start: 1;
+  grid-row-start: 1;
 }
 .homePage {
-    grid-column: 2/4;
-    grid-row-start: 1;
-    border-bottom: 1px solid teal;
+  grid-column: 2/4;
+  grid-row-start: 1;
+  border-bottom: 1px solid teal;
 }
 .topics {
-    grid-column: 2/4;
-    grid-row-start: 2;
-    border-bottom: 1px solid teal;
+  grid-column: 2/4;
+  grid-row-start: 2;
+  border-bottom: 1px solid teal;
 }
 .language {
-    grid-column: 2/4;
-    grid-row-start: 3;
+  grid-column: 2/4;
+  grid-row-start: 3;
 }
 .createdAt {
-    grid-column-start: 2;
-    grid-row-start: 7;
-    border-bottom: 1px solid teal;
+  grid-column-start: 2;
+  grid-row-start: 7;
+  border-bottom: 1px solid teal;
 }
 .subsribe {
-    grid-column-start: 3;
-    grid-row-start: 7;
-    border-bottom: 1px solid teal;
+  grid-column-start: 3;
+  grid-row-start: 7;
+  border-bottom: 1px solid teal;
 }
 .rate {
-    grid-column-start: 2;
-    grid-row-start: 8;
-    border-bottom: 1px solid teal;
+  grid-column-start: 2;
+  grid-row-start: 8;
+  border-bottom: 1px solid teal;
 }
 .diskUsage {
-    grid-column-start: 3;
-    grid-row-start: 8;
-    border-bottom: 1px solid teal;
+  grid-column-start: 3;
+  grid-row-start: 8;
+  border-bottom: 1px solid teal;
 }
 h3 {
-    color: gray;
+  color: gray;
 }
 .repHeader {
-    display: flex;
-    height: 35px;
+  display: flex;
+  height: 35px;
 }
 #repoImg {
-    width: 32px;
-    height: 32px;
-    margin-left: 20px;
-    vertical-align: top;
+  width: 32px;
+  height: 32px;
+  margin-left: 20px;
+  vertical-align: top;
 }
 #chip {
-    vertical-align: top;
-    height: 35px;
-    background-color: tomato;
+  vertical-align: top;
+  height: 35px;
+  background-color: tomato;
 }
 #chip:hover {
-    box-shadow: 0px 0px 20px tomato;
+  box-shadow: 0px 0px 20px tomato;
 }
 .heart {
-    margin-left: auto;
+  margin-left: auto;
 }
 pre {
-    background: #f4f4f4;
-    border: 1px solid #ddd;
-    border-left: 3px solid #f36d33;
-    color: #666;
-    page-break-inside: avoid;
-    font-family: monospace;
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 1.6em;
-    max-width: 100%;
-    overflow: auto;
-    padding: 1em 1.5em;
-    display: block;
-    word-wrap: break-word;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-left: 3px solid #f36d33;
+  color: #666;
+  page-break-inside: avoid;
+  font-family: monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 1.6em;
+  max-width: 100%;
+  overflow: auto;
+  padding: 1em 1.5em;
+  display: block;
+  word-wrap: break-word;
 }
+
+.liked-repository path {
+  opacity: 1;
+  color: red;
+}
+
+.no-liked-repository path:first-child {
+  opacity: 1;
+  color: #ffffff;
+}
+
+.no-liked-repository path:last-child {
+    opacity: 1;
+    color: red;
+  }

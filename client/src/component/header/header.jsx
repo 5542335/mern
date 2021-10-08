@@ -1,21 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import BlurOnIcon from '@material-ui/icons/BlurOn';
 import Link from '@material-ui/core/Link';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
-// import { routeNames } from '../../constants/routes';
 import { UserMenu } from './UserMenu';
 import SwitchLanguage from './SwitchLangButton';
+import { MainMenu } from './MainMenu';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -83,27 +82,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Header = ({ token, setToken }) => {
+export const Header = () => {
+  const tokenStore = useSelector((store) => store.token);
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const { t } = useTranslation();
 
   const menuId = 'primary-search-account-menu';
-
-  // const location = useLocation();
 
   const handleProfileMenuOpen = useCallback((event) => {
     setAnchorEl(event.currentTarget);
   }, []);
 
   const handleRedirectToRegister = useCallback(() => {
-    history.push('/register');
+    history.push('/auth');
   }, []);
 
   const loginButton = (
     <div className={classes.sectionDesktopNoLogin}>
-      <SwitchLanguage />
       <Button color="inherit" onClick={handleRedirectToRegister}>
         {t('login')}
       </Button>
@@ -112,7 +109,6 @@ export const Header = ({ token, setToken }) => {
 
   const logOutButton = (
     <div className={classes.sectionDesktopIsLogin}>
-      <SwitchLanguage />
       <IconButton
         edge="end"
         aria-label="account of current user"
@@ -121,7 +117,7 @@ export const Header = ({ token, setToken }) => {
         onClick={handleProfileMenuOpen}
         color="inherit"
       >
-        <AccountCircle />
+        <AccountCircleIcon />
       </IconButton>
     </div>
   );
@@ -131,7 +127,7 @@ export const Header = ({ token, setToken }) => {
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="open drawer">
-            <MenuIcon />
+            <MainMenu />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
             <Link href="/" color="error">
@@ -140,16 +136,12 @@ export const Header = ({ token, setToken }) => {
             <BlurOnIcon />
           </Typography>
           <div className={classes.grow} />
-          {token ? logOutButton : loginButton}
+          <SwitchLanguage />
+          {tokenStore ? logOutButton : loginButton}
         </Toolbar>
       </AppBar>
 
-      <UserMenu menuId={menuId} anchorEl={anchorEl} setAnchorEl={setAnchorEl} setToken={setToken} />
+      <UserMenu menuId={menuId} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
     </div>
   );
-};
-
-Header.propTypes = {
-  setToken: PropTypes.func.isRequired,
-  token: PropTypes.string.isRequired,
 };

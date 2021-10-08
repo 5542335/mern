@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Chip from '@material-ui/core/Chip';
 import FaceIcon from '@material-ui/icons/Face';
@@ -6,14 +6,23 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
+import { useSelector } from 'react-redux';
 import './message.css';
 
-export const Message = ({ author, body, numberOfDislikes, numberOfLikes, timestamp, onClick }) => {
-  const [like, setLike] = useState(false);
-  const [dislike, setDislike] = useState(false);
-  const [likeCount, setLikeCount] = useState(numberOfLikes || 0);
-  const [dislikeCount, setDislikeCount] = useState(numberOfDislikes || 0);
-
+export const Message = ({
+  author,
+  body,
+  timestamp,
+  onClick,
+  commentId,
+  sendLike,
+  sendDislike,
+  isLiked,
+  isDisliked,
+  numberOfLikes,
+  numberOfDislikes,
+}) => {
+  const tokenStore = useSelector((state) => state.token);
   const convertTime = (unixTime) =>
     new Intl.DateTimeFormat('ru-RU', {
       day: 'numeric',
@@ -25,38 +34,12 @@ export const Message = ({ author, body, numberOfDislikes, numberOfLikes, timesta
     }).format(unixTime);
 
   const handleLikeButton = useCallback(() => {
-    if (!like) {
-      setLikeCount(likeCount + 1);
-      setLike(true);
-    } else {
-      setLikeCount(likeCount - 1);
-      setLike(false);
-    }
-
-    if (!like && dislike) {
-      setLikeCount(likeCount + 1);
-      setLike(true);
-      setDislike(false);
-      setDislikeCount(dislikeCount - 1);
-    }
-  }, [likeCount, dislikeCount]);
+    sendLike(commentId, isLiked, isDisliked);
+  }, [commentId, isLiked, isDisliked]);
 
   const handleDislikeButton = useCallback(() => {
-    if (dislike === false) {
-      setDislikeCount(dislikeCount + 1);
-      setDislike(true);
-    } else {
-      setDislikeCount(dislikeCount - 1);
-      setDislike(false);
-    }
-
-    if (dislike === false && like) {
-      setDislikeCount(dislikeCount + 1);
-      setDislike(true);
-      setLike(false);
-      setLikeCount(likeCount - 1);
-    }
-  }, [likeCount, dislikeCount]);
+    sendDislike(commentId, isLiked, isDisliked);
+  }, [commentId, isLiked, isDisliked]);
 
   return (
     <>
@@ -72,14 +55,26 @@ export const Message = ({ author, body, numberOfDislikes, numberOfLikes, timesta
         </div>
         <div className="messageBody">{body}</div>
         <div className="messageIconsContainer">
-          <button type="button" className="likeButton" title="Нравится" onClick={handleLikeButton}>
-            {like ? <ThumbUpIcon fontSize="small" /> : <ThumbUpOutlinedIcon fontSize="small" />}
-          </button>
-          {likeCount}
-          <button type="button" className="dislikeButton" title="Не нравится" onClick={handleDislikeButton}>
-            {dislike ? <ThumbDownIcon fontSize="small" /> : <ThumbDownOutlinedIcon fontSize="small" />}
-          </button>
-          {dislikeCount}
+          {tokenStore ? (
+            <button type="button" className="likeButton" title="Нравится" onClick={handleLikeButton}>
+              {isLiked ? <ThumbUpIcon fontSize="small" /> : <ThumbUpOutlinedIcon fontSize="small" />}
+            </button>
+          ) : (
+            <button type="button" className="likeButton" disabled title="Необходимо авторизоваться">
+              {isLiked ? <ThumbUpIcon fontSize="small" /> : <ThumbUpOutlinedIcon fontSize="small" />}
+            </button>
+          )}
+          {numberOfLikes}
+          {tokenStore ? (
+            <button type="button" className="dislikeButton" title="Не нравится" onClick={handleDislikeButton}>
+              {isDisliked ? <ThumbDownIcon fontSize="small" /> : <ThumbDownOutlinedIcon fontSize="small" />}
+            </button>
+          ) : (
+            <button type="button" className="dislikeButton" disabled title="Необходимо авторизоваться">
+              {isDisliked ? <ThumbDownIcon fontSize="small" /> : <ThumbDownOutlinedIcon fontSize="small" />}
+            </button>
+          )}
+          {numberOfDislikes}
         </div>
       </div>
     </>
@@ -89,8 +84,13 @@ export const Message = ({ author, body, numberOfDislikes, numberOfLikes, timesta
 Message.propTypes = {
   author: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
+  commentId: PropTypes.string.isRequired,
+  isDisliked: PropTypes.bool.isRequired,
+  isLiked: PropTypes.bool.isRequired,
   numberOfDislikes: PropTypes.number.isRequired,
   numberOfLikes: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
+  sendDislike: PropTypes.func.isRequired,
+  sendLike: PropTypes.func.isRequired,
   timestamp: PropTypes.number.isRequired,
 };

@@ -7,16 +7,16 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as Yup from 'yup';
-import { Alert } from '@material-ui/lab';
+import { useDispatch, useSelector } from 'react-redux';
+import Alert from '@material-ui/lab/Alert';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import Collapse from '@material-ui/core/Collapse';
-import Cookies from 'universal-cookie';
 
 import CustomTextField from '../shared/customTextField/CustomTextField';
 
-import '../../index.css';
+import './profile.css';
 
 const initialValues = { email: '', firstName: '', lastName: '' };
 
@@ -40,10 +40,12 @@ const getObjectsDiff = (object1, object2) => {
   return result;
 };
 
-export const EditProfile = ({ open, onClose, setUser, userId }) => {
+export const EditProfile = ({ open, onClose, userId }) => {
+  const tokenStore = useSelector((state) => state.token);
   const [successPatch, setSuccessPatch] = useState(null);
   const [openAlert, setOpenAlert] = useState(false);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const nameRegex = new RegExp(/[a-zA-Z]/);
 
   const closeAlert = useCallback(() => {
@@ -55,9 +57,7 @@ export const EditProfile = ({ open, onClose, setUser, userId }) => {
     onSubmit: async (values) => {
       try {
         const patchUserDto = getObjectsDiff(initialValues, values);
-        const cookies = new Cookies();
-        const token = cookies.get('token');
-        const response = await fetch(`/api/user/${userId}?token=${token}`, {
+        const response = await fetch(`/api/user/editUser/${userId}?token=${tokenStore}`, {
           body: JSON.stringify(patchUserDto),
           headers: { 'Content-type': 'application/json' },
           method: 'PATCH',
@@ -67,7 +67,7 @@ export const EditProfile = ({ open, onClose, setUser, userId }) => {
         if (response.ok) {
           setSuccessPatch(data);
           setOpenAlert(true);
-          setUser(data);
+          dispatch({ payload: data, type: 'user' });
         } else {
           setSuccessPatch(false);
           setOpenAlert(true);
@@ -139,13 +139,13 @@ export const EditProfile = ({ open, onClose, setUser, userId }) => {
       </Dialog>
 
       {successPatch ? (
-        <Collapse in={openAlert}>
+        <Collapse in={openAlert} className="alert">
           <Alert variant="filled" onClose={closeAlert} severity="success">
             Данные изменены
           </Alert>
         </Collapse>
       ) : (
-        <Collapse in={openAlert}>
+        <Collapse in={openAlert} className="alert">
           <Alert variant="filled" onClose={closeAlert} severity="error">
             Ошибка
           </Alert>
@@ -158,6 +158,5 @@ export const EditProfile = ({ open, onClose, setUser, userId }) => {
 EditProfile.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  setUser: PropTypes.func.isRequired,
   userId: PropTypes.string.isRequired,
 };

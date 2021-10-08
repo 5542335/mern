@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePassDto } from './dto/change-pass.dto';
 import { User, UserDocument } from './schemas/user.schema';
+import { LikedRepoDto } from './dto/likedRepo.dto';
 const bcrypt = require('bcrypt');
 
 @Injectable()
@@ -24,10 +25,9 @@ export class UserService {
     return createdUser.save();
   }
 
-async getUserById(id: string) {
-  return this.userModel.findById(id).exec();
-
-}
+  async getUserById(id: string) {
+    return this.userModel.findById(id).exec();
+  }
 
   async getUserByEmail(email: string) {
     return this.userModel.findOne({ email: email }).exec();
@@ -39,11 +39,21 @@ async getUserById(id: string) {
     return this.userModel.findById(id).exec();
   }
 
-  async editUser(id: string, profileDto: Partial<CreateUserDto>): Promise<User> {
-    return this.userModel.findByIdAndUpdate(id, profileDto, { new: true, useFindAndModify: false }).exec();
+  async getLikedRepoIds(token: string) {
+    const { likedRepo } = await this.getUser(token);
+    return likedRepo;
   }
 
-   async validatePassword (id: string, changePassDto: ChangePassDto) {
+  async editUser(
+    id: string,
+    profileDto: Partial<CreateUserDto>,
+  ): Promise<User> {
+    return this.userModel
+      .findByIdAndUpdate(id, profileDto, { new: true, useFindAndModify: false })
+      .exec();
+  }
+
+  async validatePassword(id: string, changePassDto: ChangePassDto) {
     const user = await this.getUserById(id);
     const passwordEquals = await bcrypt.compare(
       changePassDto.oldPassword,
@@ -51,19 +61,51 @@ async getUserById(id: string) {
     );
 
     if (!passwordEquals) {
-      throw new HttpException(
-        'Неверный пароль',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Неверный пароль', HttpStatus.BAD_REQUEST);
     }
-    return user
-  };
+    return user;
+  }
 
-  async editPass (id: string, changePassDto: ChangePassDto): Promise<User> {
+  async editPass(id: string, changePassDto: ChangePassDto): Promise<User> {
     await this.validatePassword(id, changePassDto);
 
     const newHashPassword = await bcrypt.hash(changePassDto.newPassword, 5);
 
-    return this.userModel.findByIdAndUpdate(id, {password: newHashPassword}, { new: true, useFindAndModify: false }).exec();
+    return this.userModel
+      .findByIdAndUpdate(
+        id,
+        { password: newHashPassword },
+        { new: true, useFindAndModify: false },
+      )
+      .exec();
+  }
+
+  async addLikeRepo(likedRepoDto: LikedRepoDto) {
+    const { id } = await this.getUser(likedRepoDto.token);
+    await this.userModel
+      .updateOne(
+        { _id: id },
+        { $addToSet: { likedRepo: likedRepoDto.repositoryId } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async deleteLikeRepo(likedRepoDto: LikedRepoDto) {
+    const { id } = await this.getUser(likedRepoDto.token);
+    await this.userModel
+      .updateOne(
+        { _id: id },
+        { $pull: { likedRepo: likedRepoDto.repositoryId } },
+        { new: true },
+      )
+      .exec();
+    return likedRepoDto.repositoryId
+  }
+
+  async checkLikeRepo(likedRepoDto: LikedRepoDto) {
+    const { likedRepo } = await this.getUser(likedRepoDto.token);
+
+    return likedRepo.includes(likedRepoDto.repositoryId) ? true : false;
   }
 }

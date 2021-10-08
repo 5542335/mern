@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SwitchLanguage() {
+  const [disableRuBtn, setDisableRuBtn] = useState(true);
+  const [disableEnBtn, setDisableEnBtn] = useState(false);
   const classes = useStyles();
 
   const handleChangeLanguageRu = useCallback(() => {
@@ -48,6 +50,8 @@ export default function SwitchLanguage() {
 
       resources,
     });
+    setDisableRuBtn(true);
+    setDisableEnBtn(false);
   }, []);
 
   const handleChangeLanguageEn = useCallback(() => {
@@ -69,15 +73,17 @@ export default function SwitchLanguage() {
 
       resources,
     });
+    setDisableEnBtn(true);
+    setDisableRuBtn(false);
   }, []);
 
   return (
     <div className={classes.root}>
       <ButtonGroup variant="contained" color="primary" aria-label="text primary button group">
-        <Button className={classes.color} onClick={handleChangeLanguageRu}>
+        <Button className={classes.color} disabled={disableRuBtn} onClick={handleChangeLanguageRu}>
           Ru
         </Button>
-        <Button className={classes.color} onClick={handleChangeLanguageEn}>
+        <Button className={classes.color} disabled={disableEnBtn} onClick={handleChangeLanguageEn}>
           En
         </Button>
       </ButtonGroup>

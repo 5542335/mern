@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.collectionsContainer {
+  display: grid;
+  grid-template-rows: min-content;
+}
+.collectionsContent {
+  grid-row: 2;
+}
+.headerContainer {
+  display: flex;
+  flex-wrap: wrap;
+  grid-row: 1;
+  margin: 10px 0;
+}
+.chip {
+  cursor: pointer;
+}
+.chip path {
+  opacity: 1;
+  color: red;
+}
+.chip.selected {
+  background-color: #6a6a6a;
+  color: #ffffff;
+}
+#addBtn {
+  width: 32px;
+  height: 32px;
+  vertical-align: top;
+  color: teal;
+  border: none;
+  background-color: inherit;
+  cursor: pointer;
+}
+#addBtn:hover {
+  opacity: 0.9;
+}
+#addIcon {
+  width: 32px;
+  height: 32px;
+}
+.modalContent {
+  display: flex;
+  flex-direction: column;
+}
+.modalTitle {
+  align-self: center;
+  margin-bottom: 20px;
+}
+#cancelBtn {
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  float: right;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 20px;
+}
+#createBtn {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  float: right;
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 20px;
+  background-color: teal;
+  margin-left: 10px;
+}
+#createBtn:disabled {
+  color: white;
+  cursor: default;
+  background-color: #cccccc;
+}
+
+.chip .MuiSvgIcon-root.MuiChip-deleteIcon {
+  fill: rgb(71, 70, 114);
+}
+.MuiChip-root {
+  cursor: pointer !important;
+  font-size: 15px !important;
+
+}
+.MuiChip-deletable:focus {
+  background-color: #6a6a6a !important;
+}

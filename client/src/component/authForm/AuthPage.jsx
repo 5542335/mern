@@ -4,29 +4,32 @@ import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import GoogleLogin from 'react-google-login';
 import { Container, Grid } from '@material-ui/core';
-import Cookies from 'universal-cookie';
 import { Alert } from '@material-ui/lab';
 import { NavLink, useHistory } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { teal } from '@material-ui/core/colors';
+import { useDispatch } from 'react-redux';
+import Cookies from 'universal-cookie';
 
 import CustomTextField from '../shared/customTextField/CustomTextField';
 import TitleRegisterForm from '../shared/formTitle/Title';
 import SubmitButton from './submitSection/SubmitButton';
-// import SwitchLanguage from '../homePage/header/switchLangButton';
-import '../../index.css';
+
+import './authPage.css';
 
 const responseGoogle = (setGoogleResponse) => (response) => {
   setGoogleResponse(response);
 };
 const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/);
 
-export const AuthForm = ({ setToken }) => {
+export const AuthForm = () => {
   const [serverError, setServerError] = useState(null);
   const [googleResponse, setGoogleResponse] = useState(null);
+  const dispatch = useDispatch();
+  const cookies = new Cookies();
 
   console.log(googleResponse);
 
-  const cookies = new Cookies();
   const history = useHistory();
   const { t } = useTranslation();
   const formik = useFormik({
@@ -46,7 +49,7 @@ export const AuthForm = ({ setToken }) => {
           const { token } = data;
 
           cookies.set('token', token);
-          setToken(token);
+          dispatch({ payload: token, type: 'token' });
 
           history.push('/');
           const { message } = data;
@@ -63,6 +66,11 @@ export const AuthForm = ({ setToken }) => {
       password: Yup.string().matches(passwordRegex, t('validation.passwordMatches')).required(t('validation.required')),
     }),
   });
+  const theme = createTheme({
+    palette: {
+      primary: teal,
+    },
+  });
 
   return (
     <>
@@ -74,27 +82,31 @@ export const AuthForm = ({ setToken }) => {
             </Grid>
             <Grid container spacing={1} className="grid">
               <Grid item xs={12}>
-                <CustomTextField
-                  id="email"
-                  label={t('register.email')}
-                  name="email"
-                  type="email"
-                  autoComplete="Почта"
-                  helperText=""
-                  formik={formik}
-                  autoFocus="false"
-                />
+                <ThemeProvider theme={theme}>
+                  <CustomTextField
+                    id="email"
+                    label={t('register.email')}
+                    name="email"
+                    type="email"
+                    autoComplete="Почта"
+                    helperText=""
+                    formik={formik}
+                    autoFocus="false"
+                  />
+                </ThemeProvider>
               </Grid>
               <Grid item xs={12}>
-                <CustomTextField
-                  id="password"
-                  label={t('register.password')}
-                  name="password"
-                  type="password"
-                  autoComplete="Пароль"
-                  helperText=""
-                  formik={formik}
-                />
+                <ThemeProvider theme={theme}>
+                  <CustomTextField
+                    id="password"
+                    label={t('register.password')}
+                    name="password"
+                    type="password"
+                    autoComplete="Пароль"
+                    helperText=""
+                    formik={formik}
+                  />
+                </ThemeProvider>
               </Grid>
             </Grid>
             <Grid container className="grid">
@@ -122,8 +134,4 @@ export const AuthForm = ({ setToken }) => {
       )}
     </>
   );
-};
-
-AuthForm.propTypes = {
-  setToken: PropTypes.func.isRequired,
 };

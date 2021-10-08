@@ -20,6 +20,12 @@ export class User {
   @Prop()
   acceptedTerms: boolean;
 
+  @Prop()
+  likedRepo: string[];
+
+  @Prop()
+  role: string[];
+
   id: string;
 }
 

@@ -1,38 +1,16 @@
-import React, { useCallback, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { gql, useQuery } from '@apollo/client';
-import TablePagination from '@material-ui/core/TablePagination';
-import { NavLink } from 'react-router-dom';
-import TableFooter from '@material-ui/core/TableFooter';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Table, TableContainer, TableRow, Paper, TablePagination, TableFooter, Chip } from '@material-ui/core';
+import { useQuery } from '@apollo/client';
+import { useSelector } from 'react-redux';
 
-import { SearchInput } from './SearchInputs';
 import { SimpleBackdrop } from '../shared/loading/BackDrop';
 import { TablePaginationActions } from './TablePaginationActions';
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  tableCell: {
-    backgroundColor: '#F8F8F8',
-  },
-  tableCell1: {
-    width: '20%',
-  },
-  tableCell2: {
-    width: '12%',
-  },
-  tableHead: {
-    backgroundColor: 'Gainsboro',
-  },
-});
+import { Modal } from '../collections/header/modal/Modal';
+import { TableHeader } from './tableHeader/TableHeader';
+import { TableBody } from './tableBody/TableBody';
+import useHeaderFilters from './hooks/useHeaderFilters';
+import { GET_REPOS } from '../../queries/githubGetReposQuery';
+import styles from './homePage.module.css';
 
 const gererateQuery = (name, topic, language, rowsPerPage, cursor) => {
   const nameQuery = name ? `, ${name} in:name` : '';
@@ -42,52 +20,49 @@ const gererateQuery = (name, topic, language, rowsPerPage, cursor) => {
   return `query: "is:public${nameQuery}${topicQuery}${languageQuery}", type: REPOSITORY,first: ${rowsPerPage}, after: "${cursor}"`;
 };
 
-const GET_REPOS = (query) => gql`
-  {
-    search(${query}) {
-      repositoryCount
-      edges {
-        cursor
-        node {
-          ... on Repository {
-            name
-            description
-            owner {
-              login
-            }
-            languages(first: 5) {
-              nodes {
-                name
-              }
-            }
-            repositoryTopics(first: 5) {
-              nodes {
-                topic {
-                  name
-                }
-              }
-            }
-            releases(first: 5) {
-              nodes {
-                name
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const HomePage = () => {
-  const classes = useStyles();
+  const tokenStore = useSelector((state) => state.token);
+  const userStore = useSelector((state) => state.user);
+  const { language, topic, name, searchLanguage, searchName, searchTopic } = useHeaderFilters();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [cursor, setCursor] = useState('Y3Vyc29yOjE=');
-  const [name, setName] = useState('');
-  const [topic, setTopic] = useState('');
-  const [language, setLanguage] = useState('');
   const { data, loading, error } = useQuery(GET_REPOS(gererateQuery(name, topic, language, rowsPerPage, cursor)));
   const [page, setPage] = useState(0);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState('');
+  const [allLikedRepoIds, setAllLikedRepoIds] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [collections, setCollections] = useState();
+  const [selectedCollection, setSelectedCollection] = useState([]);
+
+  useEffect(() => {
+    const getAllLikedRepo = async () => {
+      const response = await fetch(`api/user/getLikedRepoIds?token=${tokenStore}`);
+      const formatResponse = await response.json();
+
+      // if (response.status === 401) {
+      //   const refsreshTokenResponse = await fetch(`api/auth/refresh-token?token=${tokenStore}`);
+      //   const newToken = await refsreshTokenResponse.json();
+
+      //   console.log(newToken);
+      // }
+
+      setAllLikedRepoIds(formatResponse);
+    };
+
+    getAllLikedRepo();
+  }, [anchorEl]);
+
+  useEffect(() => {
+    const getCollections = async () => {
+      const collectionRow = await fetch(`api/collections/getCollections?token=${tokenStore}`);
+      const collectionRowToJSON = await collectionRow.json();
+
+      setCollections(collectionRowToJSON);
+    };
+
+    getCollections();
+  }, []);
 
   const handleChangePage = useCallback(
     (event, newPage) => {
@@ -102,69 +77,69 @@ export const HomePage = () => {
     setPage(0);
   }, []);
 
-  const searchName = useCallback((e) => setName(e.target.value), [setName]);
-  const searchTopic = useCallback((e) => setTopic(e.target.value), [setTopic]);
-  const searchLanguage = useCallback((e) => setLanguage(e.target.value), [setLanguage]);
+  const handleClickCollection = (collectionName) => () => {
+    if (selectedCollection.includes(collectionName)) {
+      const newSelectedCollection = [...selectedCollection];
+
+      const index = newSelectedCollection.indexOf(collectionName);
+
+      newSelectedCollection.splice(index, 1);
+
+      setSelectedCollection(newSelectedCollection);
+    } else {
+      const newSelectedCollection = selectedCollection.concat(collectionName);
+
+      setSelectedCollection(newSelectedCollection);
+    }
+  };
+
+  const selectedRepo = data?.search?.edges?.find((item) => item.node.id === selectedRowId);
+  const collectionsForSendStr = selectedCollection.join(',');
+  const { _id: id } = userStore || {};
+
+  const handleSendBtn = useCallback(async () => {
+    const response = await fetch('/api/collections/add', {
+      body: JSON.stringify({
+        collectionName: collectionsForSendStr,
+        repoId: selectedRepo?.node.id,
+        userId: id,
+      }),
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+      method: 'PATCH',
+    });
+
+    if (response.ok) {
+      alert('Коллекции добавлены');
+    }
+  });
+  const handleCancelBtn = useCallback(() => {
+    setOpen(false);
+    setSelectedCollection([]);
+  });
 
   if (error) return `Error! ${error.message}`;
 
   return (
     <>
       {loading && <SimpleBackdrop />}
-      <TableContainer component={Paper} className={classes.container}>
-        <Table className={classes.table} size="small" aria-label="a dense table">
-          <TableHead className={classes.tableHead}>
-            <TableRow>
-              <TableCell className={classes.tableCell1}>
-                <SearchInput label="Имя репозитория" onChange={searchName} />
-              </TableCell>
-              <TableCell align="center">Описание</TableCell>
-              <TableCell align="right">
-                <SearchInput label="Автор" />
-              </TableCell>
-              <TableCell align="right">Последний релиз</TableCell>
-              <TableCell align="center" className={classes.tableCell2}>
-                <SearchInput label="Топики" onChange={searchTopic} />
-              </TableCell>
-              <TableCell align="left" className={classes.tableCell1}>
-                <SearchInput label="Языки программирования" onChange={searchLanguage} />
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data?.search.edges.map(({ node }) => (
-              <TableRow key={node.name}>
-                <TableCell component="th" scope="row">
-                  <NavLink
-                    to={{
-                      pathname: `/${node.owner.login}/${node.name}`,
-                    }}
-                  >
-                    {node.name}
-                  </NavLink>
-                </TableCell>
-                <TableCell align="right" className={classes.tableCell}>
-                  {node.description}
-                </TableCell>
-                <TableCell align="right">{node.owner.login}</TableCell>
-                <TableCell align="right" className={classes.tableCell}>
-                  {node.releases.nodes[node.releases.nodes.length - 1]?.name}
-                </TableCell>
-                <TableCell align="right">
-                  {node.repositoryTopics.nodes.reduce(
-                    (result, { topic: { name: topicName } }) => `${result}, ${topicName}`.replace(/^,*/, ''),
-                    '',
-                  )}
-                </TableCell>
-                <TableCell align="right" className={classes.tableCell}>
-                  {node.languages.nodes.reduce(
-                    (result, { name: languageName }) => `${result}, ${languageName}`.replace(/^,*/, ''),
-                    '',
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+      <TableContainer component={Paper}>
+        <Table className={styles.table} size="small" aria-label="a dense table">
+          <TableHeader
+            selectedRowId={selectedRowId}
+            searchName={searchName}
+            searchLanguage={searchLanguage}
+            searchTopic={searchTopic}
+          />
+          <TableBody
+            setOpen={setOpen}
+            anchorEl={anchorEl}
+            setAnchorEl={setAnchorEl}
+            setSelectedRowId={setSelectedRowId}
+            allLikedRepoIds={allLikedRepoIds}
+            data={data}
+          />
           <TableFooter>
             <TableRow>
               <TablePagination
@@ -181,6 +156,33 @@ export const HomePage = () => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
               />
+              <Modal open={open} selectedRowId={selectedRowId}>
+                <div className={styles.modalContainer}>
+                  <div className={styles.modalTitle}>
+                    Добавить репозиторий {`${selectedRepo?.node.name}`} (Автор: {`${selectedRepo?.node.owner.login}`}) в
+                    коллекцию
+                  </div>
+                  <div>
+                    {collections &&
+                      Object.keys(collections).map((item) => (
+                        <Chip
+                          className={`${selectedCollection.includes(item) ? styles.selected : ''}`}
+                          label={item}
+                          clickable={false}
+                          onClick={handleClickCollection(item)}
+                        />
+                      ))}
+                  </div>
+                  <div>
+                    <button type="submit" className={`${styles.add} ${styles.cancel}`} onClick={handleSendBtn}>
+                      Добавить
+                    </button>
+                    <button type="button" className={styles.cancel} onClick={handleCancelBtn}>
+                      Отмена
+                    </button>
+                  </div>
+                </div>
+              </Modal>
             </TableRow>
           </TableFooter>
         </Table>
