@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Table, TableContainer, TableRow, Paper, TablePagination, TableFooter, Chip } from '@material-ui/core';
+import { Table, TableContainer, TableRow, TablePagination, TableFooter, Chip, Paper } from '@material-ui/core';
 import { useQuery } from '@apollo/client';
 import { useSelector } from 'react-redux';
 
@@ -7,9 +7,9 @@ import { SimpleBackdrop } from '../shared/loading/BackDrop';
 import { TablePaginationActions } from './TablePaginationActions';
 import { Modal } from '../collections/header/modal/Modal';
 import { TableHeader } from './tableHeader/TableHeader';
-import { TableBody } from './tableBody/TableBody';
+import { TableBodyComponent } from './tableBody/TableBody';
 import useHeaderFilters from './hooks/useHeaderFilters';
-import { GET_REPOS } from '../../queries/githubGetReposQuery';
+import { GET_REPOS } from '../../queries/githubQueryForHomePage';
 import styles from './homePage.module.css';
 
 const gererateQuery = (name, topic, language, rowsPerPage, cursor) => {
@@ -72,6 +72,11 @@ export const HomePage = () => {
     [setPage, setCursor, data],
   );
 
+  const handleCancelBtn = useCallback(() => {
+    setOpen(false);
+    setSelectedCollection([]);
+  });
+
   const handleChangeRowsPerPage = useCallback((event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -114,10 +119,6 @@ export const HomePage = () => {
       alert('Коллекции добавлены');
     }
   });
-  const handleCancelBtn = useCallback(() => {
-    setOpen(false);
-    setSelectedCollection([]);
-  });
 
   if (error) return `Error! ${error.message}`;
 
@@ -132,13 +133,14 @@ export const HomePage = () => {
             searchLanguage={searchLanguage}
             searchTopic={searchTopic}
           />
-          <TableBody
-            setOpen={setOpen}
+          <TableBodyComponent
+            data={data}
+            selectedRowId={selectedRowId}
             anchorEl={anchorEl}
+            setOpen={setOpen}
             setAnchorEl={setAnchorEl}
             setSelectedRowId={setSelectedRowId}
             allLikedRepoIds={allLikedRepoIds}
-            data={data}
           />
           <TableFooter>
             <TableRow>

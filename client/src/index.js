@@ -7,10 +7,12 @@ import { configureStore } from './store';
 import './i18n';
 import App from './App';
 
+console.log(process.env);
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   headers: {
-    authorization: `Bearer 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`,
+    authorization: `Bearer ${process.env.REACT_APP_OCTOKIT_AUTH}`,
   },
   uri: 'https://api.github.com/graphql',
 });

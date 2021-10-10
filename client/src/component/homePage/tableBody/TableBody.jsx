@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
-import { TableCell, TableRow, MenuItem, Menu, IconButton } from '@material-ui/core';
+import { TableCell, TableRow, MenuItem, Menu, IconButton, TableBody } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-export const TableBody = ({
+export const TableBodyComponent = ({
   data,
   selectedRowId,
   anchorEl,
@@ -104,8 +104,8 @@ export const TableBody = ({
   );
 };
 
-TableBody.propTypes = {
-  allLikedRepoIds: PropTypes.string.isRequired,
+TableBodyComponent.propTypes = {
+  allLikedRepoIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   anchorEl: PropTypes.string.isRequired,
   data: PropTypes.string.isRequired,
   selectedRowId: PropTypes.string.isRequired,

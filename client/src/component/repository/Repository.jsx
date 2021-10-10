@@ -14,7 +14,7 @@ import { SimpleTab } from './components/TabPanel';
 import { ChartLanguage } from './components/Diagram';
 import './repository.css';
 import { SimpleBackdrop } from '../shared/loading/BackDrop';
-import { getRepositoryQuery } from '../../queries/githubGetRepoQuery';
+import { getRepositoryQuery } from '../../queries/githubQueryForRepository';
 import { Comments } from './components/comments/Comments';
 import { useReadme } from './hooks/useReadme';
 
