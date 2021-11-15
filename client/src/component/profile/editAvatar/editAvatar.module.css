@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
+    width: 50vw;
+    justify-content: space-between;
+}
+.chooseFile {
+    align-self: center;
+    border: 1px solid teal;
+    border-radius: 5px;
+}
+.image {
+    align-self: center;
+}
+/* .buttons {
+    display: none;
+} */
+img[src=""] {
+    display: none;
+}

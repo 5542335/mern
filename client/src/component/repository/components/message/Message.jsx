@@ -22,7 +22,7 @@ export const Message = ({
   numberOfLikes,
   numberOfDislikes,
 }) => {
-  const tokenStore = useSelector((state) => state.token);
+  const { token } = useSelector((state) => state);
   const convertTime = (unixTime) =>
     new Intl.DateTimeFormat('ru-RU', {
       day: 'numeric',
@@ -35,11 +35,11 @@ export const Message = ({
 
   const handleLikeButton = useCallback(() => {
     sendLike(commentId, isLiked, isDisliked);
-  }, [commentId, isLiked, isDisliked]);
+  }, [commentId, isLiked, isDisliked, sendLike]);
 
   const handleDislikeButton = useCallback(() => {
     sendDislike(commentId, isLiked, isDisliked);
-  }, [commentId, isLiked, isDisliked]);
+  }, [commentId, isLiked, isDisliked, sendDislike]);
 
   return (
     <>
@@ -55,7 +55,7 @@ export const Message = ({
         </div>
         <div className="messageBody">{body}</div>
         <div className="messageIconsContainer">
-          {tokenStore ? (
+          {token ? (
             <button type="button" className="likeButton" title="Нравится" onClick={handleLikeButton}>
               {isLiked ? <ThumbUpIcon fontSize="small" /> : <ThumbUpOutlinedIcon fontSize="small" />}
             </button>
@@ -65,7 +65,7 @@ export const Message = ({
             </button>
           )}
           {numberOfLikes}
-          {tokenStore ? (
+          {token ? (
             <button type="button" className="dislikeButton" title="Не нравится" onClick={handleDislikeButton}>
               {isDisliked ? <ThumbDownIcon fontSize="small" /> : <ThumbDownOutlinedIcon fontSize="small" />}
             </button>

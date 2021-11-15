@@ -13,9 +13,7 @@ import { Comment, CommentDocument } from './schemas/comment.schema';
 import { ReceiveCommentsDto } from './dto/comments.dto';
 import { UserService } from '../user/user.service';
 import { DislikeDto, LikeDto } from './dto/like.dto';
-// import { JwtWsAuthGuard } from '../auth/guards/jwt-ws-auth.guard';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtWsStrategy } from '../auth/strategies/jwt.ws.strategy';
 
 @WebSocketGateway()

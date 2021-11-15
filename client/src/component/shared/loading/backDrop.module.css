@@ -1,0 +1,4 @@
+.backdrop:global(.MuiBackdrop-root) {
+  color: white;
+  z-index: 2;
+}

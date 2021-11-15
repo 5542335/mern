@@ -13,7 +13,7 @@
     "classnames": "^2.3.1",
     "clsx": "^1.1.1",
     "concurrently": "^6.1.0",
-    "dotenv": "^8.2.0",
+    "connected-react-router": "^6.0.0",
     "formik": "^2.2.6",
     "graphql": "^15.5.1",
     "history": "^4.10.1",
@@ -31,7 +31,9 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-test-renderer": "^17.0.2",
     "redux": "^4.1.1",
+    "redux-thunk": "^2.3.0",
     "remark-gfm": "^1.0.0",
     "socket.io-client": "^2.4.0",
     "universal-cookie": "^4.0.4",
@@ -47,6 +49,11 @@
     "dev": "nodemon index",
     "lint": "eslint ./src --ext .js,.jsx --config ./.eslintrc.js",
     "lint:fix": "eslint ./src --ext .js,.jsx --fix --config ./.eslintrc.js"
+  },
+  "jest": {
+    "snapshotSerializers": ["enzyme-to-json/serializer"],
+    "collectCoverageFrom": ["src/**/*.js", "!src/index.js"],
+    "coverageReporters": ["text"]
   },
   "eslintConfig": {
     "extends": [
@@ -67,7 +74,10 @@
     ]
   },
   "devDependencies": {
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
     "babel-eslint": "^10.1.0",
+    "enzyme": "^3.11.0",
+    "enzyme-to-json": "^3.6.2",
     "eslint": "^7.26.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",

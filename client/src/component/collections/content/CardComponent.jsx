@@ -8,9 +8,10 @@ import { teal } from '@material-ui/core/colors';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import PropTypes from 'prop-types';
 import './cardComponent.css';
-import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 
+import { deleteRepoFromCollectionAction } from '../../../store/actions/repositories';
 import { CardMenu } from './CardMenu';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,63 +38,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CardComponent = ({ data, likedRepoIds, selectedLikedRepo, selectedCollection, setLikedRepoIds }) => {
-  const tokenStore = useSelector((state) => state.token);
+export const CardComponent = ({ selectedLikedRepo, selectedCollection }) => {
+  const { token } = useSelector((state) => state);
+  const { collectionRepositories } = useSelector((state) => state.collections);
+
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCardId, setSelectedCardId] = useState('');
-  const history = useHistory();
+  const dispatch = useDispatch();
 
   const handleDeleteCard = useCallback(
     (id) => async () => {
       if (selectedLikedRepo) {
-        const response = await fetch(`/api/user/dislike?token=${tokenStore}`, {
-          body: JSON.stringify({ repositoryId: id, token: tokenStore }),
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-          },
-          method: 'PATCH',
-        });
-
-        if (response.ok) {
-          const selectedCard = data.nodes.find((item) => item.id === id);
-          const newLikedRepoIds = [...likedRepoIds];
-          const index = newLikedRepoIds.indexOf(selectedCard.id);
-
-          newLikedRepoIds.splice(index, 1);
-          setLikedRepoIds(newLikedRepoIds);
-          setAnchorEl(null);
-        }
+        dispatch(
+          deleteRepoFromCollectionAction(
+            `/api/user/dislike?token=${token}`,
+            {
+              repositoryId: id,
+              token,
+            },
+            id,
+          ),
+        );
+        setAnchorEl(null);
       } else {
-        const response = await fetch(`/api/collections/delete-collect-card`, {
-          body: JSON.stringify({ collectionName: selectedCollection, repoId: id, token: tokenStore }),
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-          },
-          method: 'PATCH',
-        });
-
-        if (response.ok) {
-          const selectedCard = data.nodes.find((item) => item.id === id);
-          const newLikedRepoIds = [...likedRepoIds];
-          const index = newLikedRepoIds.indexOf(selectedCard.id);
-
-          newLikedRepoIds.splice(index, 1);
-          setLikedRepoIds(newLikedRepoIds);
-          setAnchorEl(null);
-        }
+        dispatch(
+          deleteRepoFromCollectionAction(
+            `/api/collections/delete-collect-card`,
+            {
+              collectionName: selectedCollection,
+              repoId: id,
+              token,
+            },
+            id,
+          ),
+        );
+        setAnchorEl(null);
       }
     },
-    [anchorEl, likedRepoIds],
+    [dispatch, selectedCollection, selectedLikedRepo, token],
   );
 
   const handleMoreDetails = useCallback(
     (id) => () => {
-      const selectedCard = data.nodes.find((item) => item.id === id);
+      const selectedCard = collectionRepositories?.nodes.find((item) => item.id === id);
 
-      history.push(`/${selectedCard.owner.login}/${selectedCard.name}`);
+      dispatch(push(`/${selectedCard?.owner.login}/${selectedCard?.name}`));
     },
-    [],
+    [dispatch, collectionRepositories],
   );
 
   const handleMenuOpen = (id) => (event) => {
@@ -104,8 +96,8 @@ export const CardComponent = ({ data, likedRepoIds, selectedLikedRepo, selectedC
   return (
     <>
       <div className={classes.cardContainer}>
-        {data.nodes.map((item) => (
-          <Card className={classes.root}>
+        {collectionRepositories?.nodes?.map((item) => (
+          <Card className={classes.root} key={item.id}>
             <CardHeader
               avatar={
                 <Avatar aria-label="recipe" className={classes.avatar}>
@@ -113,8 +105,8 @@ export const CardComponent = ({ data, likedRepoIds, selectedLikedRepo, selectedC
                 </Avatar>
               }
               action={
-                <IconButton aria-label="settings">
-                  <MoreVertIcon onClick={handleMenuOpen(item.id)} />
+                <IconButton aria-label="settings" onClick={handleMenuOpen(item.id)}>
+                  <MoreVertIcon />
                 </IconButton>
               }
               title={`Название: ${item?.name}`}
@@ -135,9 +127,6 @@ export const CardComponent = ({ data, likedRepoIds, selectedLikedRepo, selectedC
 };
 
 CardComponent.propTypes = {
-  data: PropTypes.string.isRequired,
-  likedRepoIds: PropTypes.string.isRequired,
   selectedCollection: PropTypes.string.isRequired,
   selectedLikedRepo: PropTypes.bool.isRequired,
-  setLikedRepoIds: PropTypes.func.isRequired,
 };

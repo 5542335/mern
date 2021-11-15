@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 export const CardMenu = ({ anchorEl, setAnchorEl, handleDeleteCard, handleMoreDetails, selectedCardId }) => {
   const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
-  }, []);
+  }, [setAnchorEl]);
 
   return (
     <Menu
@@ -23,9 +23,13 @@ export const CardMenu = ({ anchorEl, setAnchorEl, handleDeleteCard, handleMoreDe
 };
 
 CardMenu.propTypes = {
-  anchorEl: PropTypes.node.isRequired,
+  anchorEl: PropTypes.node,
   handleDeleteCard: PropTypes.func.isRequired,
   handleMoreDetails: PropTypes.func.isRequired,
   selectedCardId: PropTypes.string.isRequired,
   setAnchorEl: PropTypes.func.isRequired,
+};
+
+CardMenu.defaultProps = {
+  anchorEl: null,
 };

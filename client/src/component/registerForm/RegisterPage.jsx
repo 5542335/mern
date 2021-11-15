@@ -1,55 +1,38 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { Container, Grid } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { NavLink, useHistory } from 'react-router-dom';
-import Cookies from 'universal-cookie';
+import { NavLink } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { teal } from '@material-ui/core/colors';
 import { useDispatch } from 'react-redux';
 
+import { CustomButton } from '../shared/buttons/CustomButton';
 import CustomTextField from '../shared/customTextField/CustomTextField';
 import TitleRegisterForm from '../shared/formTitle/Title';
-import { SubmitButton } from './submitSection/SubmitButton';
 import Agreements from './body/Agreement';
 import './registerPage.css';
+import { register } from '../../store/actions/auth';
 
 const nameRegex = new RegExp(/[a-zA-Z]/);
 const passwordRegex = new RegExp(/^.*(?=.{8,32})(?=.*[!@#$%^&*()-_=+{};:,<.>]{4})((?=.*[A-Z]){1}).*$/);
 
 export const SignupForm = () => {
-  const [serverError, setServerError] = useState(null);
   const dispatch = useDispatch();
-  const cookies = new Cookies();
-  const history = useHistory();
   const { t } = useTranslation();
   const formik = useFormik({
-    initialValues: { acceptedTerms: false, email: '', firstName: '', lastName: '', password: '', role: 'user' },
-    onSubmit: async (values) => {
-      try {
-        const response = await fetch('/api/auth/registration', {
-          body: JSON.stringify(values),
-          headers: { 'Content-type': 'application/json' },
-          method: 'POST',
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          const { token } = data;
-
-          cookies.set('token', token);
-          dispatch({ payload: token, type: 'token' });
-          history.push('/');
-
-          const { message } = data;
-
-          setServerError(message);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    initialValues: {
+      acceptedTerms: false,
+      active: true,
+      email: '',
+      firstName: '',
+      lastName: '',
+      password: '',
+      role: 'user',
+    },
+    onSubmit: (values) => {
+      dispatch(register(values));
     },
 
     validationSchema: Yup.object({
@@ -145,19 +128,15 @@ export const SignupForm = () => {
             </Grid>
             <Grid container spacing={1} className="grid">
               <Grid item xs={6} className="gridItem">
-                <SubmitButton disabled={!formik.isValid || !formik.dirty} color="primary" />
+                <CustomButton htmlType="submit" disabled={!formik.isValid || !formik.dirty}>
+                  Зарегистрироваться
+                </CustomButton>
               </Grid>
             </Grid>
           </form>
         </div>
         <NavLink to="/">{t('register.toHome')}</NavLink>
       </Container>
-
-      {serverError && (
-        <Alert variant="filled" severity="error">
-          {serverError}
-        </Alert>
-      )}
     </>
   );
 };

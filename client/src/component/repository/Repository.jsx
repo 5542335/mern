@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Chip from '@material-ui/core/Chip';
@@ -8,81 +8,62 @@ import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import FavoriteTwoToneIcon from '@material-ui/icons/FavoriteTwoTone';
 import IconButton from '@material-ui/core/IconButton';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { SimpleTab } from './components/TabPanel';
 import { ChartLanguage } from './components/Diagram';
-import './repository.css';
+import styles from './repository.module.css';
 import { SimpleBackdrop } from '../shared/loading/BackDrop';
 import { getRepositoryQuery } from '../../queries/githubQueryForRepository';
 import { Comments } from './components/comments/Comments';
 import { useReadme } from './hooks/useReadme';
+import { updateCurrentRepository } from '../../store/actions/repositories/actionTypes';
+import { alertAction } from '../../store/actions/alert/index';
+import { useHandleFavorite } from './hooks/useHandleFavorite';
 
 export const Repository = ({ location }) => {
-  const tokenStore = useSelector((state) => state.token);
+  const { token } = useSelector((state) => state);
+  const dispatch = useDispatch();
   // eslint-disable-next-line no-unused-vars
   const [_, owner, name] = location.pathname.split('/');
-  const { data, loading, error } = useQuery(getRepositoryQuery(name, owner));
-  const [heart, setHeart] = useState(false);
-  const readme = useReadme(owner, name);
-
-  const values = { repositoryId: `${data?.repository.id}`, token: tokenStore };
-  const fetchLikeRepo = useCallback(
-    async (path, heartState) => {
-      const response = await fetch(`/api/user/${path}?token=${tokenStore}`, {
-        body: JSON.stringify(values),
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        method: 'PATCH',
-      });
-
-      if (response.ok) {
-        setHeart(heartState);
+  const { data, loading } = useQuery(getRepositoryQuery(name, owner), {
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (currentRepository) => {
+      if (currentRepository !== undefined) {
+        dispatch({ payload: currentRepository, type: updateCurrentRepository });
       }
     },
-    [values],
-  );
-
-  const handleHeartClickLike = useCallback(async () => {
-    if (heart) {
-      fetchLikeRepo('dislike', false);
-    } else {
-      fetchLikeRepo('like', true);
-    }
+    onError: (error) => {
+      dispatch(alertAction(`Что-то пошло не так (${error.message})`, true, 'error'));
+    },
   });
 
-  useEffect(() => {
-    if (data && tokenStore) {
-      const fetchLike = async () => {
-        const response = await fetch(`/api/user/getLike?token=${tokenStore}`, {
-          body: JSON.stringify(values),
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-          },
-          method: 'POST',
-        });
+  const { heart, handleHeartClickLike } = useHandleFavorite(data);
+  const readme = useReadme(owner, name);
 
-        if ((await response.text()) === 'true') {
-          setHeart(true);
-        }
-      };
-
-      fetchLike();
-    }
-  }, [tokenStore, data]);
+  const Tabs = useMemo(
+    () => [
+      {
+        content: () => <ReactMarkdown remarkPlugins={[gfm]}>{readme}</ReactMarkdown>,
+        tabName: 'Readme',
+      },
+      {
+        content: () => <Comments />,
+        tabName: 'Comments',
+      },
+    ],
+    [readme],
+  );
 
   if (loading) {
     return <SimpleBackdrop />;
   }
 
-  if (error) return `Error! ${error.message}`;
-
   return (
     <>
-      <div className="repHeader">
+      <div className={styles.repHeader}>
         <Chip
-          id="chip"
+          id={styles.chip}
           color="secondary"
           icon={<GitHubIcon />}
           label={`Репозиторий ${name} на GitHub`}
@@ -90,42 +71,30 @@ export const Repository = ({ location }) => {
           href={`https://github.com/${owner}/${name}`}
           clickable
         />
-        <img src={data.repository.openGraphImageUrl} alt="" id="repoImg" />
-        {tokenStore ? (
-          <div className="heart">
-            <IconButton type="submit">
+        <img src={data?.repository.openGraphImageUrl} alt="" id={styles.repoImg} />
+        {token ? (
+          <div className={styles.heart}>
+            <IconButton type="submit" onClick={handleHeartClickLike}>
               <FavoriteTwoToneIcon
-                className={heart ? 'liked-repository' : 'no-liked-repository'}
+                className={heart ? `${styles.likedRepository}` : `${styles.noLikedRepository}`}
                 fontSize="medium"
                 titleAccess={heart ? 'Убрать из понравившихся' : 'Добавить в понравившиеся'}
-                onClick={handleHeartClickLike}
               />
             </IconButton>
           </div>
         ) : null}
       </div>
-      <div className="repository-container">
-        <div className="readme">
-          <SimpleTab
-            tabs={[
-              {
-                content: () => <ReactMarkdown remarkPlugins={[gfm]}>{readme}</ReactMarkdown>,
-                tabName: 'Readme',
-              },
-              {
-                content: () => <Comments repoId={data.repository.id} />,
-                tabName: 'Comments',
-              },
-            ]}
-          />
+      <div className={styles.repositoryContainer}>
+        <div className={styles.readme}>
+          <SimpleTab tabs={Tabs} />
         </div>
-        <div className="homePage">
+        <div className={styles.homePage}>
           <div>
             <h3>Домашняя страница</h3>
           </div>
           <div>
-            {data.repository.homepageUrl ? (
-              <a href={data.repository.homepageUrl} target="_blank" rel="noreferrer">
+            {data?.repository.homepageUrl ? (
+              <a href={data?.repository.homepageUrl} target="_blank" rel="noreferrer">
                 {data.repository?.homepageUrl}
               </a>
             ) : (
@@ -133,54 +102,54 @@ export const Repository = ({ location }) => {
             )}
           </div>
         </div>
-        <div className="topics">
+        <div className={styles.topics}>
           <div>
             <h3>Топики</h3>
           </div>
           <div>
-            {data.repository.repositoryTopics.nodes.lenght
-              ? data.repository.repositoryTopics.nodes?.reduce(
+            {data?.repository.repositoryTopics.nodes.lenght
+              ? data?.repository.repositoryTopics.nodes?.reduce(
                   (result, { topic }) => `${result}, ${topic.name}`.replace(/^,*/, ''),
                   '',
                 )
               : 'Нет данных :('}
           </div>
         </div>
-        <div className="language">
+        <div className={styles.language}>
           <div>
             <h3>Языки программирования</h3>
           </div>
           <div>
-            <ChartLanguage edges={data.repository.languages.edges} />
+            <ChartLanguage edges={data?.repository?.languages.edges} />
           </div>
         </div>
-        <div className="rate">
+        <div className={styles.rate}>
           <div>
             <h3>Рейтинг на GitHub</h3>
 
             <div>
-              {data.repository.stargazerCount}
+              {data?.repository.stargazerCount}
               <StarBorderIcon fontSize="small" style={{ height: '14px' }} />
             </div>
           </div>
         </div>
-        <div className="diskUsage">
+        <div className={styles.diskUsage}>
           <div>
             <h3>Места на диске</h3>
           </div>
-          <div>{data.repository.diskUsage} кБайт</div>
+          <div>{data?.repository.diskUsage} кБайт</div>
         </div>
-        <div className="createdAt">
+        <div className={styles.createdAt}>
           <div>
             <h3>Создан</h3>
           </div>
-          <div>{data.repository.createdAt}</div>
+          <div>{data?.repository.createdAt}</div>
         </div>
-        <div className="subsribe">
+        <div className={styles.subsribe}>
           <div>
             <h3>Подписчиков</h3>
           </div>
-          <div>{data.repository.watchers.totalCount}</div>
+          <div>{data?.repository.watchers.totalCount}</div>
         </div>
       </div>
     </>

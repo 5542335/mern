@@ -2,110 +2,49 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Chip from '@material-ui/core/Chip';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import AddBoxIcon from '@material-ui/icons/AddBox';
-import { useSelector } from 'react-redux';
-import { gql, useQuery } from '@apollo/client';
-import { Alert } from '@material-ui/lab';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@apollo/client';
 
+import { useSelect } from './hooks/useSelect';
+import { getLikedRepoIdsAction } from '../../store/actions/repositories';
+import { getCollectionsAction } from '../../store/actions/collections';
 import { SimpleBackdrop } from '../shared/loading/BackDrop';
 import { ModalContent } from './header/modal/ModalContent';
-import { Modal } from './header/modal/Modal';
+import { CustomModal } from '../shared/modal/CustomModal';
 import { CardComponent } from './content/CardComponent';
 import './collections.css';
 import { AddBtn } from './content/AddBtn';
-
-const LIKED_REPOS = gql`
-  query MyQuery($likedRepoIds: [ID!]!) {
-    nodes(ids: $likedRepoIds) {
-      ... on Repository {
-        id
-        name
-        owner {
-          login
-        }
-        openGraphImageUrl
-      }
-    }
-  }
-`;
+// import { updateLikedRepoIds } from '../../store/actions/repositories/actionTypes';
+import { updateCollectionRepositories } from '../../store/actions/collections/actionTypes';
+import { LIKED_REPOS } from '../../queries/githubQueryForCollections';
 
 export const Collections = () => {
   const [open, setOpen] = useState(false);
   const [disableBtn, setDisableBtn] = useState(true);
-  const [collections, setCollections] = useState();
-  const tokenStore = useSelector((state) => state.token);
-  const [likedRepoIds, setLikedRepoIds] = useState();
-  const { data, loading } = useQuery(LIKED_REPOS, { variables: { likedRepoIds } });
-  const [alert, setAlert] = useState(false);
-  const [selectedCollection, setSelectedCollection] = useState('');
-  const [selectedLikedRepo, setSelectedLikedRepo] = useState(true);
+  const { likedRepoIds } = useSelector((state) => state.repositories);
+  const { allCollections } = useSelector((state) => state.collections);
+  const dispatch = useDispatch();
+  const { data, loading } = useQuery(LIKED_REPOS, {
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (collectionRepositories) => {
+      dispatch({ payload: collectionRepositories, type: updateCollectionRepositories });
+    },
+    variables: { likedRepoIds },
+  });
 
-  console.log(likedRepoIds);
-
-  const { _id: id } = useSelector((state) => state.user) || {};
-
-  useEffect(() => {
-    const getCollections = async () => {
-      const collectionRow = await fetch(`api/collections/getCollections?token=${tokenStore}`);
-      const collectionRowToJSON = await collectionRow.json();
-
-      setCollections(collectionRowToJSON);
-    };
-
-    getCollections();
-  }, [data]);
+  const [selectedCollection, selectedLikedRepo, handleClickCollection, handleClickLikedRepo, handleDeleteCollection] =
+    useSelect(allCollections);
 
   useEffect(() => {
-    const getLikedRepoIds = async () => {
-      const collectionRow = await fetch(`api/user/getLikedRepoIds?token=${tokenStore}`);
-      const collectionRowToJSON = await collectionRow.json();
+    dispatch(getCollectionsAction);
+  }, [data, dispatch]);
 
-      setLikedRepoIds(collectionRowToJSON);
-    };
-
-    getLikedRepoIds();
-  }, []);
+  useEffect(() => {
+    dispatch(getLikedRepoIdsAction);
+  }, [dispatch]);
 
   const handleOpenModal = useCallback(() => {
     setOpen(true);
-  }, []);
-
-  const handleDeleteCollection = (collectionName) => async () => {
-    const response = await fetch('/api/collections/delete', {
-      body: JSON.stringify({ collectionName, userId: id }),
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      method: 'DELETE',
-    });
-    const responseToJSON = await response.json();
-
-    const newCollections = { ...collections };
-
-    delete newCollections[responseToJSON.collectionName];
-
-    setCollections(newCollections);
-  };
-
-  const handleClickCollection = (collectionName) => () => {
-    setLikedRepoIds(collections[collectionName]);
-    setSelectedCollection(collectionName);
-    setSelectedLikedRepo(false);
-  };
-
-  const handleClickLikedRepo = useCallback(() => {
-    const getLikedRepoIds = async () => {
-      const collectionRow = await fetch(`api/user/getLikedRepoIds?token=${tokenStore}`);
-      const collectionRowToJSON = await collectionRow.json();
-
-      setLikedRepoIds(collectionRowToJSON);
-    };
-
-    getLikedRepoIds();
-    setSelectedCollection('');
-    setSelectedLikedRepo(true);
-  }, []);
-  const closeAlert = useCallback(() => {
-    setAlert(false);
   }, []);
 
   return (
@@ -120,9 +59,10 @@ export const Collections = () => {
             onClick={handleClickLikedRepo}
             clickable={false}
           />
-          {collections &&
-            Object.keys(collections).map((item) => (
+          {allCollections &&
+            Object.keys(allCollections).map((item) => (
               <Chip
+                key={item}
                 className={`chip  ${selectedCollection === item ? 'selected' : ''}`}
                 label={item}
                 onClick={handleClickCollection(item)}
@@ -133,42 +73,19 @@ export const Collections = () => {
           <button type="button" id="addBtn" onClick={handleOpenModal} title="Добавить коллекцию">
             <AddBoxIcon id="addIcon" />
           </button>
-          <Modal open={open} setOpen={setOpen}>
-            <ModalContent
-              setOpen={setOpen}
-              disableBtn={disableBtn}
-              setDisableBtn={setDisableBtn}
-              collections={collections}
-              setCollections={setCollections}
-              setAlert={setAlert}
-            />
-          </Modal>
+          <CustomModal open={open}>
+            <ModalContent setOpen={setOpen} disableBtn={disableBtn} setDisableBtn={setDisableBtn} />
+          </CustomModal>
         </div>
 
         <div className="contentContainer">
           {data?.nodes.length ? (
-            <CardComponent
-              data={data}
-              setLikedRepoIds={setLikedRepoIds}
-              selectedLikedRepo={selectedLikedRepo}
-              likedRepoIds={likedRepoIds}
-              selectedCollection={selectedCollection}
-            />
+            <CardComponent selectedLikedRepo={selectedLikedRepo} selectedCollection={selectedCollection} />
           ) : (
             <AddBtn />
           )}
         </div>
       </div>
-      {alert ? (
-        <Alert
-          variant="filled"
-          severity="error"
-          onClose={closeAlert}
-          style={{ bottom: 0, position: 'fixed', width: '97vw' }}
-        >
-          Коллекция с таким названием уже создана
-        </Alert>
-      ) : null}
     </>
   );
 };

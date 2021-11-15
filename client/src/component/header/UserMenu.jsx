@@ -1,41 +1,40 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
+import { push } from 'connected-react-router';
 
 export const UserMenu = ({ menuId, anchorEl, setAnchorEl }) => {
-  const history = useHistory();
   const { t } = useTranslation();
-  const userStore = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state);
   const dispatch = useDispatch();
-  const cookies = new Cookies();
+  const cookies = useMemo(() => new Cookies(), []);
 
   const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
-  }, []);
+  }, [setAnchorEl]);
 
   const handleProfileClick = useCallback(() => {
-    history.push('/profile');
+    dispatch(push('/profile'));
     setAnchorEl(null);
-  }, []);
+  }, [setAnchorEl, dispatch]);
 
   const handleAdmin = useCallback(() => {
-    history.push('/admin');
+    dispatch(push('/admin'));
     setAnchorEl(null);
-  }, []);
+  }, [dispatch, setAnchorEl]);
 
   const handleLogOut = useCallback(() => {
     cookies.remove('token');
     setAnchorEl(null);
     dispatch({ payload: null, type: 'token' });
-    history.push('/');
-  }, []);
+    dispatch(push('/'));
+  }, [setAnchorEl, dispatch, cookies]);
 
-  const role = userStore?.role.includes('admin');
+  const role = user?.role.includes('admin');
 
   return (
     <Menu
@@ -55,7 +54,10 @@ export const UserMenu = ({ menuId, anchorEl, setAnchorEl }) => {
 };
 
 UserMenu.propTypes = {
-  anchorEl: PropTypes.node.isRequired,
+  anchorEl: PropTypes.node,
   menuId: PropTypes.string.isRequired,
   setAnchorEl: PropTypes.func.isRequired,
+};
+UserMenu.defaultProps = {
+  anchorEl: null,
 };

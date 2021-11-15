@@ -1,0 +1,22 @@
+.button {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    float: right;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    background-color: transparent;
+}
+.button:hover {
+    opacity: 0.8;
+}
+.primary {
+    background-color: teal;
+    color: white;
+}
+.primary:disabled {
+    color: white;
+    cursor: default;
+    background-color: #cccccc;
+}

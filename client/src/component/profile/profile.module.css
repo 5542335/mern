@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.profileContainer {
+  display: grid;
+  grid-template-columns: 1fr min-content 1fr;
+  grid-template-rows: 20% min-content 20%;
+}
+.profile {
+  grid-column: 2/3;
+  grid-row: 2/3;
+  width: 400px;
+  height: 400px;
+  border: 2px solid teal;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 13%  30% 15% 15% 15% 1fr;
+}
+.title {
+  grid-column: 1/4;
+  grid-row: 1;
+  justify-self: center;
+  padding-top: 15px;
+  font-size: 20px;
+  font-weight: bold;
+}
+.avatar {
+  justify-self: center;
+  align-self: flex-start;
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  border-radius: 35%;
+  cursor: pointer;
+}
+.avatar img {
+   position: absolute;
+   top:50%;
+   left:50%;
+   transform:translate(-50%,-50%);
+   width:100px;
+   height:100px;
+   object-fit:cover;
+}
+.avatar:hover {
+  opacity: 0.8;
+}
+.email {
+  grid-column: 1;
+  grid-row: 3;
+  padding-left: 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.emailValue {
+  grid-column: 2/4;
+  grid-row-start: 3;
+}
+.firstName {
+  grid-column: 1;
+  grid-row: 4;
+  padding-left: 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.firstNameValue {
+  grid-column: 2/4;
+  grid-row: 4;
+}
+.lastName {
+  grid-column: 1;
+  grid-row: 5;
+  padding-left: 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.lastNameValue {
+  grid-column: 2/4;
+  grid-row: 5;
+}
+.buttons {
+  grid-column: 1/4;
+  grid-row: 6;
+  align-self: end;
+  justify-self: center;
+  margin-bottom: 15px;
+}
+/* #getFile {
+  display: none;
+} */

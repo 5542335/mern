@@ -8,25 +8,6 @@ form textarea[type="text"] {
 form {
     margin-bottom: 56px;
 }
-.commentButton {
-    font-size: 0.9rem;
-    font-weight: bold;
-    padding: 10px 20px;
-    float: right;
-    border: none;
-    cursor: pointer;
-    border-radius: 2px;
-    margin-top: 20px;
-}
-.sendButton {
-    background-color: #065fd4;
-    color: white;
-}
-.sendButton:disabled {
-    color: white;
-    cursor: default;
-    background-color: #cccccc;
-}
 .commentLine {
     position: absolute;
     width: 57%;

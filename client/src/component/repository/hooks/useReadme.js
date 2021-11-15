@@ -12,7 +12,7 @@ export const useReadme = (owner, name) => {
     };
 
     fetchReadme();
-  }, []);
+  }, [name, owner]);
 
   return readme;
 };

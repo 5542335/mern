@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component: BackDrop Test default state Should render component 1`] = `
+<WithStyles(ForwardRef(Backdrop))
+  className="backdrop"
+  onClick={[Function]}
+  open={true}
+>
+  <WithStyles(ForwardRef(CircularProgress))
+    color="secondary"
+  />
+</WithStyles(ForwardRef(Backdrop))>
+`;

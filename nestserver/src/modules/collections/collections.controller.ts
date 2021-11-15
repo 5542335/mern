@@ -3,13 +3,17 @@ import {
   Controller,
   Delete,
   Get,
+  Put,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CollectionsService } from './collections.service';
 import { CollectionsDto } from './dto/collections.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('api/collections')
 export class CollectionsController {
   constructor(private collectionsService: CollectionsService) {}
@@ -29,7 +33,7 @@ export class CollectionsController {
     return this.collectionsService.deleteCollection(collectionsDto);
   }
 
-  @Patch('/add')
+  @Put('/addCollections')
   addCollections(@Body() collectionsDto: CollectionsDto) {
     return this.collectionsService.addCollections(collectionsDto);
   }

@@ -1,80 +1,38 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import Alert from '@material-ui/lab/Alert';
+import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import Collapse from '@material-ui/core/Collapse';
 
+import { CustomButton } from '../shared/buttons/CustomButton';
 import CustomTextField from '../shared/customTextField/CustomTextField';
-
-import './profile.css';
+import { updateUserProfileAction } from '../../store/actions/user';
+import styles from './profile.module.css';
+import { alertAction } from '../../store/actions/alert/index';
 
 const initialValues = { email: '', firstName: '', lastName: '' };
 
-const isEmptyObject = (object) => !Object.keys(object).length;
-
-const getObjectsDiff = (object1, object2) => {
-  const result = {};
-
-  Object.entries(object1).forEach(([key, value]) => {
-    if (typeof value === 'object' && typeof object2[key] === 'object') {
-      const objectsDiff = getObjectsDiff(value, object2[key]);
-
-      if (!isEmptyObject(objectsDiff)) {
-        result[key] = getObjectsDiff(value, object2[key]);
-      }
-    } else if (value !== object2[key]) {
-      result[key] = object2[key];
-    }
-  });
-
-  return result;
-};
-
-export const EditProfile = ({ open, onClose, userId }) => {
-  const tokenStore = useSelector((state) => state.token);
-  const [successPatch, setSuccessPatch] = useState(null);
-  const [openAlert, setOpenAlert] = useState(false);
+export const EditProfile = ({ open, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const nameRegex = new RegExp(/[a-zA-Z]/);
-
-  const closeAlert = useCallback(() => {
-    setOpenAlert(false);
-  }, []);
 
   const formik = useFormik({
     initialValues,
     onSubmit: async (values) => {
       try {
-        const patchUserDto = getObjectsDiff(initialValues, values);
-        const response = await fetch(`/api/user/editUser/${userId}?token=${tokenStore}`, {
-          body: JSON.stringify(patchUserDto),
-          headers: { 'Content-type': 'application/json' },
-          method: 'PATCH',
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          setSuccessPatch(data);
-          setOpenAlert(true);
-          dispatch({ payload: data, type: 'user' });
-        } else {
-          setSuccessPatch(false);
-          setOpenAlert(true);
-        }
-      } catch (error) {
-        console.log(error);
+        dispatch(updateUserProfileAction(values, initialValues));
+      } catch {
+        dispatch(alertAction('Что-то пошло не так, данные не изменены', true, 'error'));
       } finally {
+        formik.setValues(initialValues);
         onClose();
       }
     },
@@ -94,7 +52,7 @@ export const EditProfile = ({ open, onClose, userId }) => {
           <DialogContent>
             <DialogContentText>{t('profile.newData')}</DialogContentText>
 
-            <Grid container spacing={1} className="grid">
+            <Grid container spacing={1} className={styles.grid}>
               <CustomTextField
                 id="email"
                 label={t('register.email')}
@@ -128,29 +86,15 @@ export const EditProfile = ({ open, onClose, userId }) => {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={onClose} color="primary">
-              {t('cancel')}
-            </Button>
-            <Button color="primary" type="submit">
-              {t('save')}
-            </Button>
+            <CustomButton type="secondary" onClick={onClose}>
+              Отмена
+            </CustomButton>
+            <CustomButton onClick={onClose} htmlType="submit">
+              Сохранить
+            </CustomButton>
           </DialogActions>
         </form>
       </Dialog>
-
-      {successPatch ? (
-        <Collapse in={openAlert} className="alert">
-          <Alert variant="filled" onClose={closeAlert} severity="success">
-            Данные изменены
-          </Alert>
-        </Collapse>
-      ) : (
-        <Collapse in={openAlert} className="alert">
-          <Alert variant="filled" onClose={closeAlert} severity="error">
-            Ошибка
-          </Alert>
-        </Collapse>
-      )}
     </>
   );
 };
@@ -158,5 +102,4 @@ export const EditProfile = ({ open, onClose, userId }) => {
 EditProfile.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  userId: PropTypes.string.isRequired,
 };

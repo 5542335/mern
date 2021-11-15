@@ -1,19 +1,21 @@
 import React, { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import './addBtn.css';
+import { push } from 'connected-react-router';
+import { useDispatch } from 'react-redux';
+
+import styles from './addBtn.module.css';
 
 export const AddBtn = () => {
-  const history = useHistory();
+  const dispatch = useDispatch();
   const handleRedirectToHome = useCallback(() => {
-    history.push('/');
-  });
+    dispatch(push('/'));
+  }, [dispatch]);
 
   return (
     <>
-      <div className="btnContainer">
-        <div className="txtUnderBtn">Здесь пока ничего нет :(</div>
+      <div className={styles.btnContainer}>
+        <div className={styles.txtUnderBtn}>Здесь пока ничего нет :(</div>
         <div>
-          <button type="button" className="addButton" onClick={handleRedirectToHome}>
+          <button type="button" className={styles.addButton} onClick={handleRedirectToHome}>
             Добавить
           </button>
         </div>

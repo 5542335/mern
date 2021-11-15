@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+    justify-content: center;
+}
+.tableContainer {
+    margin-top: 5vh;
+    border: 1px solid teal;
+    border-radius: 5px;
+}
+.customButton {
+    margin-top: 0 !important;
+}
+.tableCell {
+    width: 170px;
+}
+.tableCellHeader {
+    text-align: center !important;
+}
+.tableCellBody {
+    text-align: center !important;
+}

@@ -1,16 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Table, TableContainer, TableRow, TablePagination, TableFooter, Chip, Paper } from '@material-ui/core';
+import { Table, TableContainer, Paper } from '@material-ui/core';
 import { useQuery } from '@apollo/client';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { SimpleBackdrop } from '../shared/loading/BackDrop';
-import { TablePaginationActions } from './TablePaginationActions';
-import { Modal } from '../collections/header/modal/Modal';
 import { TableHeader } from './tableHeader/TableHeader';
 import { TableBodyComponent } from './tableBody/TableBody';
 import useHeaderFilters from './hooks/useHeaderFilters';
 import { GET_REPOS } from '../../queries/githubQueryForHomePage';
+import { TableFooterComponent } from './tableFooter/TableFooter';
+import { updateAllRepositories } from '../../store/actions/repositories/actionTypes';
 import styles from './homePage.module.css';
+import { ModalComponent } from './tableBody/Modal';
+import { getLikedRepoIdsAction } from '../../store/actions/repositories';
+import { getCollectionsAction } from '../../store/actions/collections';
 
 const gererateQuery = (name, topic, language, rowsPerPage, cursor) => {
   const nameQuery = name ? `, ${name} in:name` : '';
@@ -21,48 +24,29 @@ const gererateQuery = (name, topic, language, rowsPerPage, cursor) => {
 };
 
 export const HomePage = () => {
-  const tokenStore = useSelector((state) => state.token);
-  const userStore = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const { language, topic, name, searchLanguage, searchName, searchTopic } = useHeaderFilters();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [cursor, setCursor] = useState('Y3Vyc29yOjE=');
-  const { data, loading, error } = useQuery(GET_REPOS(gererateQuery(name, topic, language, rowsPerPage, cursor)));
+  const { data, loading, error } = useQuery(GET_REPOS(gererateQuery(name, topic, language, rowsPerPage, cursor)), {
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (allRepositories) => {
+      dispatch({ payload: allRepositories, type: updateAllRepositories });
+    },
+  });
+
   const [page, setPage] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState('');
-  const [allLikedRepoIds, setAllLikedRepoIds] = useState([]);
   const [open, setOpen] = useState(false);
-  const [collections, setCollections] = useState();
-  const [selectedCollection, setSelectedCollection] = useState([]);
 
   useEffect(() => {
-    const getAllLikedRepo = async () => {
-      const response = await fetch(`api/user/getLikedRepoIds?token=${tokenStore}`);
-      const formatResponse = await response.json();
-
-      // if (response.status === 401) {
-      //   const refsreshTokenResponse = await fetch(`api/auth/refresh-token?token=${tokenStore}`);
-      //   const newToken = await refsreshTokenResponse.json();
-
-      //   console.log(newToken);
-      // }
-
-      setAllLikedRepoIds(formatResponse);
-    };
-
-    getAllLikedRepo();
-  }, [anchorEl]);
+    dispatch(getLikedRepoIdsAction);
+  }, [anchorEl, dispatch]);
 
   useEffect(() => {
-    const getCollections = async () => {
-      const collectionRow = await fetch(`api/collections/getCollections?token=${tokenStore}`);
-      const collectionRowToJSON = await collectionRow.json();
-
-      setCollections(collectionRowToJSON);
-    };
-
-    getCollections();
-  }, []);
+    dispatch(getCollectionsAction);
+  }, [dispatch]);
 
   const handleChangePage = useCallback(
     (event, newPage) => {
@@ -72,53 +56,10 @@ export const HomePage = () => {
     [setPage, setCursor, data],
   );
 
-  const handleCancelBtn = useCallback(() => {
-    setOpen(false);
-    setSelectedCollection([]);
-  });
-
   const handleChangeRowsPerPage = useCallback((event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   }, []);
-
-  const handleClickCollection = (collectionName) => () => {
-    if (selectedCollection.includes(collectionName)) {
-      const newSelectedCollection = [...selectedCollection];
-
-      const index = newSelectedCollection.indexOf(collectionName);
-
-      newSelectedCollection.splice(index, 1);
-
-      setSelectedCollection(newSelectedCollection);
-    } else {
-      const newSelectedCollection = selectedCollection.concat(collectionName);
-
-      setSelectedCollection(newSelectedCollection);
-    }
-  };
-
-  const selectedRepo = data?.search?.edges?.find((item) => item.node.id === selectedRowId);
-  const collectionsForSendStr = selectedCollection.join(',');
-  const { _id: id } = userStore || {};
-
-  const handleSendBtn = useCallback(async () => {
-    const response = await fetch('/api/collections/add', {
-      body: JSON.stringify({
-        collectionName: collectionsForSendStr,
-        repoId: selectedRepo?.node.id,
-        userId: id,
-      }),
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      method: 'PATCH',
-    });
-
-    if (response.ok) {
-      alert('Коллекции добавлены');
-    }
-  });
 
   if (error) return `Error! ${error.message}`;
 
@@ -134,61 +75,21 @@ export const HomePage = () => {
             searchTopic={searchTopic}
           />
           <TableBodyComponent
-            data={data}
             selectedRowId={selectedRowId}
             anchorEl={anchorEl}
             setOpen={setOpen}
             setAnchorEl={setAnchorEl}
             setSelectedRowId={setSelectedRowId}
-            allLikedRepoIds={allLikedRepoIds}
           />
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                colSpan={3}
-                count={data?.search.repositoryCount}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                SelectProps={{
-                  inputProps: { 'aria-label': 'rows per page' },
-                  native: true,
-                }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
-              />
-              <Modal open={open} selectedRowId={selectedRowId}>
-                <div className={styles.modalContainer}>
-                  <div className={styles.modalTitle}>
-                    Добавить репозиторий {`${selectedRepo?.node.name}`} (Автор: {`${selectedRepo?.node.owner.login}`}) в
-                    коллекцию
-                  </div>
-                  <div>
-                    {collections &&
-                      Object.keys(collections).map((item) => (
-                        <Chip
-                          className={`${selectedCollection.includes(item) ? styles.selected : ''}`}
-                          label={item}
-                          clickable={false}
-                          onClick={handleClickCollection(item)}
-                        />
-                      ))}
-                  </div>
-                  <div>
-                    <button type="submit" className={`${styles.add} ${styles.cancel}`} onClick={handleSendBtn}>
-                      Добавить
-                    </button>
-                    <button type="button" className={styles.cancel} onClick={handleCancelBtn}>
-                      Отмена
-                    </button>
-                  </div>
-                </div>
-              </Modal>
-            </TableRow>
-          </TableFooter>
+          <TableFooterComponent
+            page={page}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+            rowsPerPage={rowsPerPage}
+          />
         </Table>
       </TableContainer>
+      <ModalComponent open={open} selectedRowId={selectedRowId} setOpen={setOpen} />
     </>
   );
 };

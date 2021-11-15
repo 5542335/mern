@@ -1,9 +1,14 @@
 import React from 'react';
 import { Chart } from 'react-google-charts';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
-export const ChartLanguage = ({ edges }) => {
-  const mapData = [['Language', 'size'], ...edges.map((item) => [item.node.name, item.size])];
+export const ChartLanguage = () => {
+  const { currentRepository } = useSelector((state) => state.repositories);
+
+  const mapData = [
+    ['Language', 'size'],
+    ...(currentRepository?.repository?.languages.edges.map((item) => [item.node.name, item.size]) || []),
+  ];
 
   return (
     <Chart
@@ -15,15 +20,4 @@ export const ChartLanguage = ({ edges }) => {
       rootProps={{ 'data-testid': '1' }}
     />
   );
-};
-
-ChartLanguage.propTypes = {
-  edges: PropTypes.arrayOf(
-    PropTypes.shape({
-      node: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-      }).isRequired,
-      size: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
 };

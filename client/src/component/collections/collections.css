@@ -47,38 +47,6 @@
   display: flex;
   flex-direction: column;
 }
-.modalTitle {
-  align-self: center;
-  margin-bottom: 20px;
-}
-#cancelBtn {
-  font-size: 0.9rem;
-  font-weight: bold;
-  padding: 10px 20px;
-  float: right;
-  border: none;
-  cursor: pointer;
-  border-radius: 2px;
-  margin-top: 20px;
-}
-#createBtn {
-  color: white;
-  font-size: 0.9rem;
-  font-weight: bold;
-  padding: 10px 20px;
-  float: right;
-  border: none;
-  cursor: pointer;
-  border-radius: 2px;
-  margin-top: 20px;
-  background-color: teal;
-  margin-left: 10px;
-}
-#createBtn:disabled {
-  color: white;
-  cursor: default;
-  background-color: #cccccc;
-}
 
 .chip .MuiSvgIcon-root.MuiChip-deleteIcon {
   fill: rgb(71, 70, 114);

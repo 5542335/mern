@@ -6,7 +6,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
-import { useHistory } from 'react-router';
+import { push } from 'connected-react-router';
+import { useDispatch } from 'react-redux';
 
 const StyledMenu = (props) => (
   <Menu
@@ -38,7 +39,7 @@ const StyledMenuItem = withStyles((theme) => ({
 
 export const MainMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const history = useHistory();
+  const dispatch = useDispatch();
 
   const handleClick = useCallback((event) => {
     setAnchorEl(event.target);
@@ -49,9 +50,9 @@ export const MainMenu = () => {
   }, []);
 
   const handleLikedRepository = useCallback(() => {
-    history.push('/collections');
+    dispatch(push('/collections'));
     setAnchorEl(null);
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

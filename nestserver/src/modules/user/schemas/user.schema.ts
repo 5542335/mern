@@ -26,6 +26,12 @@ export class User {
   @Prop()
   role: string[];
 
+  @Prop()
+  active: boolean;
+
+  @Prop()
+  avatar: string;
+
   id: string;
 }
 

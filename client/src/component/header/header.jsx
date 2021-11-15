@@ -3,14 +3,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router-dom';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import BlurOnIcon from '@material-ui/icons/BlurOn';
 import Link from '@material-ui/core/Link';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { push } from 'connected-react-router';
 
 import { UserMenu } from './UserMenu';
 import SwitchLanguage from './SwitchLangButton';
@@ -77,16 +77,19 @@ const useStyles = makeStyles((theme) => ({
   title: {
     display: 'none',
     [theme.breakpoints.up('sm')]: {
+      '&:hover': {
+        opacity: '0.9',
+      },
       display: 'block',
     },
   },
 }));
 
 export const Header = () => {
-  const tokenStore = useSelector((store) => store.token);
+  const { token, user } = useSelector((store) => store);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const history = useHistory();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const menuId = 'primary-search-account-menu';
@@ -96,8 +99,8 @@ export const Header = () => {
   }, []);
 
   const handleRedirectToRegister = useCallback(() => {
-    history.push('/auth');
-  }, []);
+    dispatch(push('/auth'));
+  }, [dispatch]);
 
   const loginButton = (
     <div className={classes.sectionDesktopNoLogin}>
@@ -117,7 +120,11 @@ export const Header = () => {
         onClick={handleProfileMenuOpen}
         color="inherit"
       >
-        <AccountCircleIcon />
+        {user?.avatar ? (
+          <img src={user.avatar} alt="" width="35" height="35" style={{ borderRadius: '50%' }} />
+        ) : (
+          <AccountCircleIcon />
+        )}
       </IconButton>
     </div>
   );
@@ -130,14 +137,14 @@ export const Header = () => {
             <MainMenu />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            <Link href="/" color="error">
+            <Link href="/" color="error" underline="none">
               GitFind
             </Link>
             <BlurOnIcon />
           </Typography>
           <div className={classes.grow} />
           <SwitchLanguage />
-          {tokenStore ? logOutButton : loginButton}
+          {token ? logOutButton : loginButton}
         </Toolbar>
       </AppBar>
 

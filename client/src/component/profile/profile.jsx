@@ -1,61 +1,51 @@
-import React, { useState, useCallback } from 'react';
-import Button from '@material-ui/core/Button';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import { EditProfile } from './editProfile';
-import { EditPass } from './editPass';
-import './profile.css';
+import { EditAvatar } from './editAvatar/EditAvatar';
+import { CustomButton } from '../shared/buttons/CustomButton';
+import { CustomModal } from '../shared/modal/CustomModal';
+import { EditProfile } from './EditProfile';
+import { EditPass } from './EditPass';
+import styles from './profile.module.css';
+import { closeModal, useProfileData, openEditProfile, openEditPass, openEditAvatar } from './useProfileData';
+
+const defaultAvatarUrl = 'https://img.icons8.com/material-rounded/100/000000/user-male-circle.png';
 
 export const Profile = () => {
-  const userStore = useSelector((state) => state.user);
-  const [open, setOpen] = useState(false);
-  const [openPass, setOpenPass] = useState(false);
-
+  const [state, handleUpdate] = useProfileData();
+  const { user } = useSelector((store) => store);
   const { t } = useTranslation();
-
-  const handleClickOpen = useCallback(() => {
-    setOpen(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setOpen(false);
-  }, []);
-
-  const handleClickOpenPass = useCallback(() => {
-    setOpenPass(true);
-  }, []);
-
-  const handleClosePass = useCallback(() => {
-    setOpenPass(false);
-  }, []);
-
-  const { _id: id } = userStore || {};
 
   return (
     <>
-      <div className="profile-container">
-        <div className="profile">
-          <div className="title">{t('profile.profile')}</div>
+      <div className={styles.profileContainer}>
+        <div className={styles.profile}>
+          <div className={styles.title}>{t('profile.profile')}</div>
+          <div className={styles.avatar} onClick={handleUpdate(openEditAvatar)}>
+            <img src={user?.avatar ? user.avatar : defaultAvatarUrl} alt="" />
+          </div>
+          <div className={styles.email}>{t('register.email')}:</div>
+          <div className={styles.emailValue}>{user?.email}</div>
+          <div className={styles.firstName}>{t('register.firstName')}:</div>
+          <div className={styles.firstNameValue}>{user?.firstName}</div>
+          <div className={styles.lastName}>{t('register.lastName')}:</div>
+          <div className={styles.lastNameValue}>{user?.lastName}</div>
 
-          <div className="email">{t('register.email')}:</div>
-          <div className="emailValue">{userStore?.email}</div>
-          <div className="firstName">{t('register.firstName')}:</div>
-          <div className="firstNameValue">{userStore?.firstName}</div>
-          <div className="lastName">{t('register.lastName')}:</div>
-          <div className="lastNameValue">{userStore?.lastName}</div>
-
-          <div className="buttons">
-            <Button variant="outlined" color="primary" className="gridItem" onClick={handleClickOpen}>
-              {/* {t('edit')} */} Редактировать
-            </Button>
-            <Button variant="outlined" color="primary" className="gridItem" onClick={handleClickOpenPass}>
+          <div className={styles.buttons}>
+            <CustomButton type="secondary" onClick={handleUpdate(openEditProfile)}>
+              Редактировать
+            </CustomButton>
+            <CustomButton type="secondary" onClick={handleUpdate(openEditPass)}>
               Изменить пароль
-            </Button>
+            </CustomButton>
           </div>
 
-          <EditProfile open={open} onClose={handleClose} userId={id} />
-          <EditPass open={openPass} onClose={handleClosePass} userId={id} />
+          <EditProfile open={state.isEditingProfile} onClose={handleUpdate(closeModal)} />
+          <EditPass open={state.isEditingPass} onClose={handleUpdate(closeModal)} />
+          <CustomModal open={state.isEditingAvatar} onClose={handleUpdate(closeModal)}>
+            <EditAvatar setOpenAva={handleUpdate(closeModal)} />
+          </CustomModal>
         </div>
       </div>
     </>

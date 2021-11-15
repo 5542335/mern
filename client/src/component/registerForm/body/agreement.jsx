@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Checkbox, Button, Dialog, DialogActions, DialogContent } from '@material-ui/core';
+import { Box, Checkbox, Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import PropTypes from 'prop-types';
+
+import { CustomButton } from '../../shared/buttons/CustomButton';
 
 const Agreements = ({ onChange }) => {
   const [open, setOpen] = useState(false);
@@ -24,8 +26,9 @@ const Agreements = ({ onChange }) => {
         inputProps={{ 'aria-label': 'secondary checkbox' }}
         onClick={onChange}
       />
-
-      <Button onClick={handleClickOpen}>{t('register.accordance')}</Button>
+      <CustomButton type="secondary" onClick={handleClickOpen} style={{ 'margin-top': 0 }}>
+        Я принимаю условия
+      </CustomButton>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
@@ -33,7 +36,7 @@ const Agreements = ({ onChange }) => {
             Пользовательское Соглашение Настоящее Пользовательское Соглашение (Далее Соглашение) регулирует отношения
             между владельцем com (далее savik или Администрация) с одной стороны и пользователем сайта с другой. Сайт
             savik не является средством массовой информации. Используя сайт, Вы соглашаетесь с условиями данного
-            соглашения. Если Вы не согласны с условиями данного соглашения, не используйте сайт savik! Права и
+            соглашения. Если Вы не согласны с условиями данного соглашения, не используйте сайт savik!! Права и
             обязанности сторон Пользователь имеет право: - осуществлять поиск информации на сайте - получать информацию
             на сайте - использовать информацию сайта в личных некоммерческих целях Администрация имеет право: - по
             своему усмотрению и необходимости создавать, изменять, отменять правила - ограничивать доступ к любой

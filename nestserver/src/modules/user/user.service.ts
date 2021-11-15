@@ -6,6 +6,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePassDto } from './dto/change-pass.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { LikedRepoDto } from './dto/likedRepo.dto';
+import { BlockUserDto } from './dto/block-user.dto';
+import { ChangeAvatarDto } from './dto/change-avatar.dto';
 const bcrypt = require('bcrypt');
 
 @Injectable()
@@ -13,7 +15,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async getAllUsers(): Promise<User[]> {
     return this.userModel.find().exec();
@@ -89,6 +91,8 @@ export class UserService {
         { new: true },
       )
       .exec();
+
+    return { asd: likedRepoDto.repositoryId };
   }
 
   async deleteLikeRepo(likedRepoDto: LikedRepoDto) {
@@ -100,12 +104,24 @@ export class UserService {
         { new: true },
       )
       .exec();
-    return likedRepoDto.repositoryId
+    return { asd: likedRepoDto.repositoryId };
   }
 
   async checkLikeRepo(likedRepoDto: LikedRepoDto) {
     const { likedRepo } = await this.getUser(likedRepoDto.token);
+    const liked = likedRepo.includes(likedRepoDto.repositoryId);
 
-    return likedRepo.includes(likedRepoDto.repositoryId) ? true : false;
+    return { liked };
+  }
+
+  async blockUser(blockUserDto: BlockUserDto) {
+    return await this.userModel.findByIdAndUpdate(blockUserDto.userId, { active: blockUserDto.active }, { new: true }).exec();
+  }
+
+  async changeAvatar(changeAvatarDto: ChangeAvatarDto, token: string) {
+    const { id } = await this.getUser(token);
+    return this.userModel
+      .findByIdAndUpdate({ _id: id }, { avatar: changeAvatarDto.avatar }, { new: true, useFindAndModify: false })
+      .exec();
   }
 }

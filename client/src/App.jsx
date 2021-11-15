@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
+import { Switch, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { AuthForm } from './component/authForm/AuthPage';
@@ -11,42 +10,33 @@ import { Header } from './component/header/header';
 import { Repository } from './component/repository/Repository';
 import { Collections } from './component/collections/Collections';
 import { Admin } from './component/admin/Admin';
-
-import './index.css';
-
-const history = createBrowserHistory();
+import { updateUserAction } from './store/actions/user';
+import { CustomAlert } from './component/shared/alert/CustomAlert';
 
 const App = () => {
   const dispatch = useDispatch();
-  const tokenStore = useSelector((state) => state.token);
+  const { user } = useSelector((state) => state);
+  const { openAlert, alertMessage } = useSelector((state) => state.alert);
 
   useEffect(() => {
-    if (tokenStore) {
-      const fetchUser = async () => {
-        const userRaw = await fetch(`api/user?token=${tokenStore}`);
-        const formatUser = await userRaw.json();
+    dispatch(updateUserAction);
+  }, [dispatch]);
 
-        dispatch({ payload: formatUser, type: 'user' });
-      };
-
-      fetchUser();
-    }
-  }, [tokenStore]);
+  const isAdmin = !!user && user.role.includes('admin');
 
   return (
     <>
-      <Router history={history}>
-        <Header />
-        <Switch>
-          <Route exact path="/" component={HomePage} />
-          <Route path="/register" component={SignupForm} />
-          <Route path="/auth" component={AuthForm} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/:repositoryOwner/:repositoryName" component={Repository} />
-          <Route path="/collections" component={Collections} />
-          <Route path="/admin" component={Admin} />
-        </Switch>
-      </Router>
+      <Header />
+      <Switch>
+        <Route exact path="/" component={HomePage} />
+        <Route path="/register" component={SignupForm} />
+        <Route path="/auth" component={AuthForm} />
+        <Route path="/profile" component={Profile} />
+        <Route path="/:repositoryOwner/:repositoryName" component={Repository} />
+        <Route path="/collections" component={Collections} />
+        {isAdmin ? <Route path="/admin" component={Admin} /> : 'not found'}
+      </Switch>
+      {openAlert && <CustomAlert>{alertMessage}</CustomAlert>}
     </>
   );
 };

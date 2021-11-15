@@ -5,4 +5,5 @@ export class CreateUserDto {
   readonly lastName: string;
   readonly acceptedTerms: boolean;
   readonly role: string[];
+  readonly active: boolean;
 }

@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 
-import { UserService } from '../user/user.service';
 import { CollectionsDto } from './dto/collections.dto';
 import { Collect, CollectDocument } from './schema/collections.schema';
 const bcrypt = require('bcrypt');
@@ -14,7 +13,7 @@ export class CollectionsService {
   constructor(
     @InjectModel(Collect.name) private collectModel: Model<CollectDocument>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async getCollections(token: string) {
     const { id } = this.jwtService.decode(token) as { id: string };
@@ -59,18 +58,19 @@ export class CollectionsService {
       })
       .exec();
 
-    const result = allCollectsOfUser.map(async (item) => {
-      if (collectionsNameArr.includes(item.collectionName)) {
-        await this.collectModel
-          .updateOne(
-            { _id: item._id },
-            { $addToSet: { repoIds: collectionsDto.repoId } },
-            { new: true },
-          )
-          .exec();
-      }
-    });
 
-    return result;
+    const result = allCollectsOfUser.map(async (item) => {
+      const updateMethod = collectionsNameArr.includes(item.collectionName) ? '$addToSet' : '$pull';
+      
+      return await this.collectModel
+        .findOneAndUpdate(
+          { _id: item._id },
+          { [updateMethod]: { repoIds: collectionsDto.repoId } },
+          { new: true },
+        )
+        .exec();
+    });
+    
+    return await Promise.all(result);
   }
 }
